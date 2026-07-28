@@ -2,6 +2,7 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import { AppleIcon } from "./icons";
 
 export function WaitlistModal({
   open,
@@ -66,7 +67,10 @@ export function WaitlistModal({
 
             {!submitted ? (
               <>
-                <div className="modal-badge">🍎 Coming soon</div>
+                <div className="modal-badge">
+                  <AppleIcon size={14} fill="var(--amber)" />
+                  Coming soon
+                </div>
                 <h3 id="waitlist-title" className="modal-title">
                   Plateful is coming to iPhone
                 </h3>
