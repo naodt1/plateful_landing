@@ -4,6 +4,8 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { AppleIcon } from "./icons";
 
+const FORMSPREE_ENDPOINT = "https://formspree.io/f/mlgqzjjl";
+
 export function WaitlistModal({
   open,
   onClose,
@@ -13,6 +15,8 @@ export function WaitlistModal({
 }) {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     if (!open) return;
@@ -31,8 +35,29 @@ export function WaitlistModal({
     if (!open) {
       setEmail("");
       setSubmitted(false);
+      setSubmitting(false);
+      setError(false);
     }
   }, [open]);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setSubmitting(true);
+    setError(false);
+    try {
+      const res = await fetch(FORMSPREE_ENDPOINT, {
+        method: "POST",
+        headers: { Accept: "application/json" },
+        body: new FormData(e.currentTarget),
+      });
+      if (!res.ok) throw new Error("Formspree request failed");
+      setSubmitted(true);
+    } catch {
+      setError(true);
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <AnimatePresence>
@@ -79,15 +104,10 @@ export function WaitlistModal({
                   we&apos;ll let you know the moment it lands on the App
                   Store.
                 </p>
-                <form
-                  className="modal-form"
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    setSubmitted(true);
-                  }}
-                >
+                <form className="modal-form" onSubmit={handleSubmit}>
                   <input
                     type="email"
+                    name="email"
                     required
                     placeholder="you@example.com"
                     value={email}
@@ -95,8 +115,22 @@ export function WaitlistModal({
                     className="modal-input"
                     aria-label="Email address"
                   />
-                  <button type="submit" className="modal-submit">
-                    Join the waitlist
+                  <input
+                    type="hidden"
+                    name="source"
+                    value="Plateful landing page waitlist"
+                  />
+                  {error && (
+                    <p className="modal-error">
+                      Something went wrong. Please try again.
+                    </p>
+                  )}
+                  <button
+                    type="submit"
+                    className="modal-submit"
+                    disabled={submitting}
+                  >
+                    {submitting ? "Joining..." : "Join the waitlist"}
                   </button>
                 </form>
               </>
