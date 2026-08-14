@@ -2,8 +2,8 @@ import Image from "next/image";
 import { Reveal, RevealStagger, RevealItem } from "@/components/Reveal";
 import { StoreButtons } from "@/components/StoreButtons";
 import { GlobeIcon, YouTubeIcon, TikTokIcon } from "@/components/icons";
-import { PlatefulLogo } from "@/components/Logo";
 
+import platefulLogo from "@/public/play_store_512.png";
 import screenRecipe from "@/public/screens/screen-recipe.png";
 import screenHealthify from "@/public/screens/screen-healthify.png";
 import screenTailor from "@/public/screens/screen-tailor.png";
@@ -99,7 +99,7 @@ export default function Home() {
       <nav className="container nav" aria-label="Main">
         <div className="brand">
           <div className="brand-mark">
-            <PlatefulLogo size={38} />
+            <Image src={platefulLogo} alt="" width={38} height={38} priority />
           </div>
           <span className="brand-name">Plateful</span>
         </div>
@@ -302,7 +302,7 @@ export default function Home() {
       <section className="cta" aria-labelledby="cta-title">
         <Reveal className="cta-inner">
           <div className="cta-mark">
-            <PlatefulLogo size={60} />
+            <Image src={platefulLogo} alt="" width={60} height={60} />
           </div>
           <h2 id="cta-title">Make every recipe your own</h2>
           <p>Free to download. Save your first recipe in seconds.</p>
@@ -315,7 +315,7 @@ export default function Home() {
         <div className="footer-inner">
           <div className="footer-brand">
             <div className="footer-mark">
-              <PlatefulLogo size={30} />
+              <Image src={platefulLogo} alt="" width={30} height={30} />
             </div>
             <span className="footer-name">Plateful</span>
           </div>
