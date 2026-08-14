@@ -112,9 +112,9 @@ export default function Home() {
       <header className="container hero">
         <Reveal>
           <h1>
-            Any recipe,
+            Any recipe.
             <br />
-            your way.
+            Your diet.
           </h1>
           <p className="hero-sub">
             Save recipes from TikTok, Instagram, YouTube or any website, then

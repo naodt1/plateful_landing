@@ -22,7 +22,7 @@ const siteUrl = "https://plateful.app";
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Plateful: Any Recipe, Your Way",
+    default: "Plateful: Any Recipe. Your Diet.",
     template: "%s | Plateful",
   },
   description:
@@ -50,14 +50,14 @@ export const metadata: Metadata = {
     type: "website",
     url: siteUrl,
     siteName: "Plateful",
-    title: "Plateful: Any Recipe, Your Way",
+    title: "Plateful: Any Recipe. Your Diet.",
     description:
       "Save recipes from TikTok, Instagram, YouTube or any website, then tailor them to your diet, servings, and taste.",
     locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Plateful: Any Recipe, Your Way",
+    title: "Plateful: Any Recipe. Your Diet.",
     description:
       "Save recipes from anywhere and tailor them to your diet, servings, and taste.",
   },
