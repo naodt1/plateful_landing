@@ -78,7 +78,7 @@ const jsonLd = {
   operatingSystem: "iOS, Android",
   applicationCategory: "LifestyleApplication",
   description:
-    "Save recipes from TikTok, Instagram, YouTube or any website, then tailor them to your diet, servings, and taste. Plan your week, build grocery lists automatically, and cook from your pantry.",
+    "Save any recipe from TikTok, YouTube, or the web. Plateful adapts it to fit your diet automatically, and you can make any recipe even healthier with one tap.",
   offers: {
     "@type": "Offer",
     price: "0",
@@ -117,9 +117,9 @@ export default function Home() {
             Your diet.
           </h1>
           <p className="hero-sub">
-            Save recipes from TikTok, Instagram, YouTube or any website, then
-            tailor them to your diet, servings, and taste. Recipes from
-            anywhere, made to fit you.
+            Save any recipe from TikTok, YouTube, or the web. Plateful adapts
+            it to fit your diet automatically, and you can make any recipe
+            even healthier with one tap.
           </p>
           <div id="get">
             <StoreButtons />

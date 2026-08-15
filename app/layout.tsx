@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     template: "%s | Plateful",
   },
   description:
-    "Save recipes from TikTok, Instagram, YouTube or any website, then tailor them to your diet, servings, and taste. Plan your week, build grocery lists automatically, and cook from your pantry.",
+    "Save any recipe from TikTok, YouTube, or the web. Plateful adapts it to fit your diet automatically, and you can make any recipe even healthier with one tap.",
   keywords: [
     "recipe app",
     "recipe organizer",
@@ -52,14 +52,14 @@ export const metadata: Metadata = {
     siteName: "Plateful",
     title: "Plateful: Any Recipe. Your Diet.",
     description:
-      "Save recipes from TikTok, Instagram, YouTube or any website, then tailor them to your diet, servings, and taste.",
+      "Save any recipe from TikTok, YouTube, or the web. Plateful adapts it to fit your diet automatically, and you can make any recipe even healthier with one tap.",
     locale: "en_US",
   },
   twitter: {
     card: "summary_large_image",
     title: "Plateful: Any Recipe. Your Diet.",
     description:
-      "Save recipes from anywhere and tailor them to your diet, servings, and taste.",
+      "Save any recipe from TikTok, YouTube, or the web. Plateful adapts it to fit your diet automatically, and you can make any recipe even healthier with one tap.",
   },
   robots: {
     index: true,
