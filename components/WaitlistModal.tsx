@@ -2,6 +2,7 @@
 
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import { Check, X } from "lucide-react";
 import { AppleIcon } from "./icons";
 
 const FORMSPREE_ENDPOINT = "https://formspree.io/f/mlgqzjjl";
@@ -75,10 +76,10 @@ export function WaitlistModal({
             role="dialog"
             aria-modal="true"
             aria-labelledby="waitlist-title"
-            initial={{ opacity: 0, y: 24, scale: 0.97 }}
+            initial={{ opacity: 0, y: 20, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 16, scale: 0.98 }}
-            transition={{ duration: 0.25, ease: [0.21, 0.65, 0.36, 1] }}
+            exit={{ opacity: 0, y: 14, scale: 0.98 }}
+            transition={{ duration: 0.24, ease: [0.21, 0.65, 0.36, 1] }}
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -87,13 +88,13 @@ export function WaitlistModal({
               aria-label="Close"
               onClick={onClose}
             >
-              ×
+              <X size={17} />
             </button>
 
             {!submitted ? (
               <>
                 <div className="modal-badge">
-                  <AppleIcon size={14} fill="var(--amber)" />
+                  <AppleIcon size={13} fill="currentColor" />
                   Coming soon
                 </div>
                 <h3 id="waitlist-title" className="modal-title">
@@ -136,7 +137,10 @@ export function WaitlistModal({
               </>
             ) : (
               <>
-                <div className="modal-badge">✓ You&apos;re on the list</div>
+                <div className="modal-badge">
+                  <Check size={13} strokeWidth={3} />
+                  You&apos;re on the list
+                </div>
                 <h3 id="waitlist-title" className="modal-title">
                   Thanks, we&apos;ll be in touch
                 </h3>

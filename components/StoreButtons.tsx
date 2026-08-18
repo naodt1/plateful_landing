@@ -3,40 +3,44 @@
 import { useState } from "react";
 import { AppleIcon, PlayIcon } from "./icons";
 import { WaitlistModal } from "./WaitlistModal";
+import { PLAY_STORE_URL } from "@/lib/site";
 
-export function StoreButtons({ center = false }: { center?: boolean }) {
+export function StoreButtons({
+  center = false,
+  onDark = false,
+}: {
+  center?: boolean;
+  onDark?: boolean;
+}) {
   const [waitlistOpen, setWaitlistOpen] = useState(false);
 
   return (
     <>
-      <div className={center ? "store-buttons center" : "store-buttons"}>
-        <button
-          type="button"
-          className="store-btn"
-          aria-haspopup="dialog"
-          aria-label="Plateful on the App Store: coming soon, join the waitlist"
-          onClick={() => setWaitlistOpen(true)}
-        >
-          <AppleIcon />
-          <span className="store-btn-text">
-            <span className="small">Coming soon on the</span>
-            <span className="big">App Store</span>
-          </span>
-        </button>
+      <div className={center ? "cta-group center" : "cta-group"}>
         <a
-          href="https://play.google.com/store/apps/details?id=com.naodtadele.plateful"
+          href={PLAY_STORE_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="store-btn"
-          aria-label="Get Plateful on Google Play"
+          className={`btn btn-primary btn-lg${onDark ? " on-dark" : ""}`}
         >
           <PlayIcon />
-          <span className="store-btn-text">
-            <span className="small">GET IT ON</span>
-            <span className="big">Google Play</span>
+          <span className="btn-stack">
+            <span className="btn-sub">Get it on</span>
+            <span>Google Play</span>
           </span>
         </a>
+
+        <button
+          type="button"
+          className={`btn btn-ghost${onDark ? " on-dark" : ""}`}
+          aria-haspopup="dialog"
+          onClick={() => setWaitlistOpen(true)}
+        >
+          <AppleIcon size={17} fill="currentColor" />
+          Coming soon on iOS
+        </button>
       </div>
+
       <WaitlistModal
         open={waitlistOpen}
         onClose={() => setWaitlistOpen(false)}

@@ -1,7 +1,21 @@
 import Image from "next/image";
+import {
+  Camera,
+  Check,
+  ChefHat,
+  Globe,
+  Leaf,
+  Link2,
+  Refrigerator,
+  ShoppingCart,
+  SlidersHorizontal,
+} from "lucide-react";
+
 import { Reveal, RevealStagger, RevealItem } from "@/components/Reveal";
 import { StoreButtons } from "@/components/StoreButtons";
-import { GlobeIcon, YouTubeIcon, TikTokIcon } from "@/components/icons";
+import { ImportFlow } from "@/components/ImportFlow";
+import { YouTubeIcon, TikTokIcon } from "@/components/icons";
+import { PLAY_STORE_URL, SITE_URL } from "@/lib/site";
 
 import platefulLogo from "@/public/play_store_512.png";
 import screenRecipe from "@/public/screens/screen-recipe.png";
@@ -13,38 +27,38 @@ import screenPantry from "@/public/screens/screen-pantry.png";
 
 const features = [
   {
-    icon: "🔗",
-    bg: "#eef4ef",
+    Icon: Link2,
+    tint: "mist",
     title: "Import instantly",
     body: "Share a link from TikTok, Instagram, YouTube or any website and AI extracts the full recipe in seconds.",
   },
   {
-    icon: "🍳",
-    bg: "#fdf1e2",
+    Icon: ChefHat,
+    tint: "sand",
     title: "Step-by-step cooking",
     body: "Adjust servings on the fly and follow a clean, hands-free cooking mode from prep to plate.",
   },
   {
-    icon: "🥗",
-    bg: "#eef4ef",
+    Icon: SlidersHorizontal,
+    tint: "mist",
     title: "Tailor to your diet",
     body: "Set diet and allergy preferences once and every recipe adapts to fit the way you eat.",
   },
   {
-    icon: "🌿",
-    bg: "#fdf1e2",
+    Icon: Leaf,
+    tint: "sand",
     title: "Healthify any meal",
     body: "Get smart ingredient swaps that cut calories and sodium while keeping the flavor.",
   },
   {
-    icon: "🛒",
-    bg: "#eef4ef",
+    Icon: ShoppingCart,
+    tint: "mist",
     title: "Auto grocery lists",
     body: "Plan your week and Plateful builds an organized grocery list automatically.",
   },
   {
-    icon: "🥫",
-    bg: "#fdf1e2",
+    Icon: Refrigerator,
+    tint: "sand",
     title: "Cook from your pantry",
     body: "Find recipes you can make right now with the ingredients you already have on hand.",
   },
@@ -84,7 +98,7 @@ const jsonLd = {
     price: "0",
     priceCurrency: "USD",
   },
-  url: "https://plateful.app",
+  url: SITE_URL,
 };
 
 export default function Home() {
@@ -95,115 +109,123 @@ export default function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      {/* Nav */}
+      {/* ---------- Nav ---------- */}
       <nav className="container nav" aria-label="Main">
         <div className="brand">
-          <div className="brand-mark">
+          <span className="brand-mark">
             <Image src={platefulLogo} alt="" width={38} height={38} priority />
-          </div>
+          </span>
           <span className="brand-name">Plateful</span>
         </div>
-        <a href="#get" className="nav-cta">
+        <a
+          href={PLAY_STORE_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="btn btn-primary"
+        >
           Get the app
         </a>
       </nav>
 
-      {/* Hero */}
+      {/* ---------- 1. Hero ---------- */}
       <header className="container hero">
         <Reveal>
-          <h1>
-            Any recipe.
-            <br />
-            Your diet.
-          </h1>
+          <h1>Yeah. It&apos;s been missing this whole time.</h1>
           <p className="hero-sub">
             Save any recipe from TikTok, YouTube, or the web. Plateful adapts
-            it to fit your diet automatically, and you can make any recipe
-            even healthier with one tap.
+            it to your diet automatically.
           </p>
-          <div id="get">
-            <StoreButtons />
-          </div>
+          <StoreButtons />
+          <p className="hero-note">Free to download.</p>
         </Reveal>
 
         <Reveal delay={0.15} y={40} className="hero-visual">
-          <div className="hero-glow" />
+          <span className="hero-plate" aria-hidden="true" />
           <div className="phone phone-hero floaty">
-            <div className="phone-notch" />
             <Image
               src={screenRecipe}
-              alt="Plateful recipe screen showing an imported recipe"
+              alt="A recipe saved in Plateful, showing tags, servings, and diet controls"
               priority
-              sizes="288px"
+              sizes="282px"
             />
           </div>
         </Reveal>
       </header>
 
-      {/* Features */}
+      {/* ---------- 2. Features ---------- */}
       <section className="section-white" aria-labelledby="features-title">
         <div className="container">
           <Reveal className="section-head">
-            <p className="eyebrow">Everything in one place</p>
+            <p className="eyebrow">What you get</p>
             <h2 id="features-title" className="section-title">
-              From a random link to dinner on the table
+              Link in. Dinner out.
             </h2>
           </Reveal>
 
           <RevealStagger className="feat-grid">
-            {features.map((f) => (
-              <RevealItem key={f.title} className="feat-card">
-                <div className="feat-icon" style={{ background: f.bg }}>
-                  <span aria-hidden="true">{f.icon}</span>
-                </div>
-                <h3>{f.title}</h3>
-                <p>{f.body}</p>
+            {features.map(({ Icon, tint, title, body }) => (
+              <RevealItem key={title} className="feat-card">
+                <span className={`feat-icon ${tint}`}>
+                  <Icon size={20} strokeWidth={1.9} aria-hidden="true" />
+                </span>
+                <h3>{title}</h3>
+                <p>{body}</p>
               </RevealItem>
             ))}
           </RevealStagger>
         </div>
       </section>
 
-      {/* Import sources */}
+      {/* ---------- 3. One tap import ---------- */}
       <section className="section-green" aria-labelledby="import-title">
-        <div className="container import-inner">
-          <Reveal>
-            <p className="eyebrow on-dark">One tap to import</p>
+        <div className="container">
+          <Reveal className="section-head">
+            <p className="eyebrow on-dark">One tap import</p>
             <h2 id="import-title" className="section-title">
-              Bring recipes in from anywhere
+              Watch a link become a recipe
             </h2>
-            <p className="import-sub">
-              Share a link and AI pulls out the full recipe, clean and
-              cookable. It works with:
+            <p className="section-sub on-dark">
+              Hit share on any post, pick Plateful, and the full recipe lands
+              in your kitchen. Clean, scaled, and cookable.
             </p>
           </Reveal>
-          <RevealStagger className="import-chips">
-            <RevealItem className="chip">
-              <GlobeIcon />
-              Recipe websites
-            </RevealItem>
-            <RevealItem className="chip">
-              <YouTubeIcon />
-              YouTube
-            </RevealItem>
-            <RevealItem className="chip">
-              <TikTokIcon />
-              TikTok
-            </RevealItem>
-            <RevealItem className="chip chip-soon">
-              <span style={{ fontSize: 20 }} aria-hidden="true">
-                🖼️
+
+          <Reveal delay={0.1}>
+            <ImportFlow />
+          </Reveal>
+
+          <Reveal delay={0.15}>
+            <div className="sources">
+              <span className="sources-label">Works with</span>
+              <span className="chip">
+                <Globe size={16} strokeWidth={2} aria-hidden="true" />
+                Recipe websites
               </span>
-              Screenshots <span className="soon-badge">SOON</span>
-            </RevealItem>
-          </RevealStagger>
+              <span className="chip">
+                <YouTubeIcon />
+                YouTube
+              </span>
+              <span className="chip">
+                <TikTokIcon />
+                TikTok
+              </span>
+              <span className="chip chip-soon">
+                <Camera size={16} strokeWidth={2} aria-hidden="true" />
+                Screenshots
+                <span className="soon-badge">SOON</span>
+              </span>
+            </div>
+          </Reveal>
         </div>
       </section>
 
-      {/* Showcase: Healthify */}
+      {/* ---------- 4. Healthify ---------- */}
       <section className="container showcase" aria-labelledby="healthify-title">
         <Reveal>
-          <div className="showcase-badge">🌿 Healthify</div>
+          <span className="showcase-badge">
+            <Leaf size={15} strokeWidth={2} aria-hidden="true" />
+            Healthify
+          </span>
           <h2 id="healthify-title">Healthier swaps, same great meal</h2>
           <p className="showcase-body">
             Let AI suggest healthier ingredient swaps like brown rice for
@@ -213,19 +235,19 @@ export default function Home() {
           <ul className="check-list">
             <li>
               <span className="check" aria-hidden="true">
-                ✓
+                <Check size={17} strokeWidth={2.6} />
               </span>
               One-tap ingredient swaps
             </li>
             <li>
               <span className="check" aria-hidden="true">
-                ✓
+                <Check size={17} strokeWidth={2.6} />
               </span>
               See calories saved per serving
             </li>
             <li>
               <span className="check" aria-hidden="true">
-                ✓
+                <Check size={17} strokeWidth={2.6} />
               </span>
               Tailor to your diet &amp; allergies
             </li>
@@ -236,30 +258,32 @@ export default function Home() {
             <Image
               src={screenHealthify}
               alt="Plateful Healthify screen with healthier ingredient swaps"
-              sizes="262px"
+              sizes="258px"
             />
           </div>
         </Reveal>
       </section>
 
-      {/* Showcase: Tailor */}
+      {/* ---------- 5. Tailor ---------- */}
       <section className="section-green" aria-labelledby="tailor-title">
-        <div className="container showcase" style={{ paddingTop: 0, paddingBottom: 0 }}>
-          <Reveal
-            delay={0.1}
-            y={36}
-            className="showcase-visual first-on-mobile"
-          >
+        <div
+          className="container showcase"
+          style={{ paddingTop: 0, paddingBottom: 0 }}
+        >
+          <Reveal delay={0.1} y={36} className="showcase-visual first-on-mobile">
             <div className="phone phone-md phone-dark-green">
               <Image
                 src={screenTailor}
                 alt="Plateful Tailor screen adapting a recipe to preferences"
-                sizes="262px"
+                sizes="258px"
               />
             </div>
           </Reveal>
           <Reveal>
-            <div className="showcase-badge on-dark">⚙️ Tailor</div>
+            <span className="showcase-badge on-dark">
+              <SlidersHorizontal size={15} strokeWidth={2} aria-hidden="true" />
+              Tailor
+            </span>
             <h2 id="tailor-title">Every recipe, made for you</h2>
             <p className="showcase-body on-dark">
               Set your diet and preferences once. Plateful adapts any recipe to
@@ -274,11 +298,11 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Screens gallery */}
+      {/* ---------- 6. Everything in one place ---------- */}
       <section className="gallery" aria-labelledby="gallery-title">
         <div className="container">
           <Reveal className="section-head">
-            <p className="eyebrow">Your whole kitchen</p>
+            <p className="eyebrow">Everything in one place</p>
             <h2 id="gallery-title" className="section-title">
               Plan, shop, and cook from one app
             </h2>
@@ -288,7 +312,7 @@ export default function Home() {
             {galleryItems.map((item) => (
               <RevealItem key={item.title} className="gallery-item">
                 <div className="phone phone-sm">
-                  <Image src={item.image} alt={item.alt} sizes="240px" />
+                  <Image src={item.image} alt={item.alt} sizes="236px" />
                 </div>
                 <h3>{item.title}</h3>
                 <p>{item.body}</p>
@@ -298,25 +322,30 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Final CTA */}
+      {/* ---------- 7. Final CTA ---------- */}
       <section className="cta" aria-labelledby="cta-title">
-        <Reveal className="cta-inner">
-          <div className="cta-mark">
-            <Image src={platefulLogo} alt="" width={60} height={60} />
-          </div>
-          <h2 id="cta-title">Make every recipe your own</h2>
-          <p>Free to download. Save your first recipe in seconds.</p>
-          <StoreButtons center />
-        </Reveal>
+        <div className="container">
+          <Reveal className="cta-inner">
+            <span className="cta-mark">
+              <Image src={platefulLogo} alt="" width={58} height={58} />
+            </span>
+            <h2 id="cta-title">Your next recipe is one link away</h2>
+            <p>
+              Stop screenshotting recipes you never cook. Free to download,
+              and your first save takes seconds.
+            </p>
+            <StoreButtons center onDark />
+          </Reveal>
+        </div>
       </section>
 
-      {/* Footer */}
+      {/* ---------- 8. Footer ---------- */}
       <footer className="footer">
         <div className="footer-inner">
           <div className="footer-brand">
-            <div className="footer-mark">
+            <span className="footer-mark">
               <Image src={platefulLogo} alt="" width={30} height={30} />
-            </div>
+            </span>
             <span className="footer-name">Plateful</span>
           </div>
           <span className="footer-note">
