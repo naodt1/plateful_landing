@@ -110,7 +110,9 @@ export default function Home() {
       {/* ---------- 1. Hero ---------- */}
       <header className="container hero">
         <Reveal>
-          <h1>Turn any recipe to fit your diet.</h1>
+          <h1>
+            Adapt any recipe to your <span className="accent">diet</span>.
+          </h1>
           <p className="hero-sub">
             Save any recipe from TikTok, YouTube, or the web. Plateful adapts
             it to your diet automatically.

@@ -256,6 +256,11 @@ img {
   max-width: 13ch;
 }
 
+.hero h1 .accent {
+  font-style: italic;
+  color: var(--green);
+}
+
 .hero-sub {
   font-size: 19px;
   line-height: 1.6;
