@@ -10,11 +10,13 @@
   --green-hover: #1a6a48;
   --green-deep: #16412e;
   --green-mist: #eef4ef;
+  --green-mist-soft: #f4f8f5;
   --green-pale: #8fc7a5;
   --green-fog: #c8d6cc;
   --dark: #1a1814;
   --border: #ece7dd;
   --border-strong: #ded7c9;
+  --border-green: #dbe8de;
 
   /* neutral darks used inside the mocked-up social post */
   --post-bg: #111111;
@@ -413,10 +415,10 @@ img {
 }
 
 .feat-card {
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-green);
   border-radius: 18px;
   padding: 26px 26px 28px;
-  background: var(--cream);
+  background: var(--green-mist-soft);
   transition: transform 0.22s ease, box-shadow 0.22s ease,
     border-color 0.22s ease;
 }
@@ -424,7 +426,7 @@ img {
 .feat-card:hover {
   transform: translateY(-3px);
   box-shadow: var(--shadow-card-hover);
-  border-color: var(--border-strong);
+  border-color: var(--green-pale);
 }
 
 .feat-icon {
@@ -435,9 +437,6 @@ img {
   align-items: center;
   justify-content: center;
   margin-bottom: 18px;
-}
-
-.feat-icon {
   background: var(--green-mist);
   color: var(--green);
 }
@@ -1060,6 +1059,25 @@ img {
   :root {
     --section-y: 72px;
     --gutter: 22px;
+  }
+
+  .nav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--cream);
+    padding-top: 14px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav .brand-name {
+    font-size: 20px;
+  }
+
+  .nav .btn-primary {
+    padding: 10px 16px;
+    font-size: 14px;
   }
 
   .hero {
