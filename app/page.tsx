@@ -152,31 +152,7 @@ export default function Home() {
         </Reveal>
       </header>
 
-      {/* ---------- 2. Features ---------- */}
-      <section className="section-white" aria-labelledby="features-title">
-        <div className="container">
-          <Reveal className="section-head">
-            <p className="eyebrow">What you get</p>
-            <h2 id="features-title" className="section-title">
-              Link in. Dinner out.
-            </h2>
-          </Reveal>
-
-          <RevealStagger className="feat-grid">
-            {features.map(({ Icon, tint, title, body }) => (
-              <RevealItem key={title} className="feat-card">
-                <span className={`feat-icon ${tint}`}>
-                  <Icon size={20} strokeWidth={1.9} aria-hidden="true" />
-                </span>
-                <h3>{title}</h3>
-                <p>{body}</p>
-              </RevealItem>
-            ))}
-          </RevealStagger>
-        </div>
-      </section>
-
-      {/* ---------- 3. One tap import ---------- */}
+      {/* ---------- 2. One tap import ---------- */}
       <section className="section-green" aria-labelledby="import-title">
         <div className="container">
           <Reveal className="section-head">
@@ -219,7 +195,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ---------- 4. Healthify ---------- */}
+      {/* ---------- 3. Healthify ---------- */}
       <section className="container showcase" aria-labelledby="healthify-title">
         <Reveal>
           <span className="showcase-badge">
@@ -264,7 +240,7 @@ export default function Home() {
         </Reveal>
       </section>
 
-      {/* ---------- 5. Tailor ---------- */}
+      {/* ---------- 4. Tailor ---------- */}
       <section className="section-green" aria-labelledby="tailor-title">
         <div
           className="container showcase"
@@ -298,7 +274,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ---------- 6. Everything in one place ---------- */}
+      {/* ---------- 5. Everything in one place ---------- */}
       <section className="gallery" aria-labelledby="gallery-title">
         <div className="container">
           <Reveal className="section-head">
@@ -316,6 +292,30 @@ export default function Home() {
                 </div>
                 <h3>{item.title}</h3>
                 <p>{item.body}</p>
+              </RevealItem>
+            ))}
+          </RevealStagger>
+        </div>
+      </section>
+
+      {/* ---------- 6. Features ---------- */}
+      <section className="section-white" aria-labelledby="features-title">
+        <div className="container">
+          <Reveal className="section-head">
+            <p className="eyebrow">What you get</p>
+            <h2 id="features-title" className="section-title">
+              Link in. Dinner out.
+            </h2>
+          </Reveal>
+
+          <RevealStagger className="feat-grid">
+            {features.map(({ Icon, tint, title, body }) => (
+              <RevealItem key={title} className="feat-card">
+                <span className={`feat-icon ${tint}`}>
+                  <Icon size={20} strokeWidth={1.9} aria-hidden="true" />
+                </span>
+                <h3>{title}</h3>
+                <p>{body}</p>
               </RevealItem>
             ))}
           </RevealStagger>
