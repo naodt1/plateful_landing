@@ -14,8 +14,10 @@ import {
 import { Reveal, RevealStagger, RevealItem } from "@/components/Reveal";
 import { StoreButtons } from "@/components/StoreButtons";
 import { ImportFlow } from "@/components/ImportFlow";
+import { SiteNav } from "@/components/SiteNav";
+import { SiteFooter } from "@/components/SiteFooter";
 import { YouTubeIcon, TikTokIcon } from "@/components/icons";
-import { PLAY_STORE_URL, SITE_URL } from "@/lib/site";
+import { SITE_URL } from "@/lib/site";
 
 import platefulLogo from "@/public/play_store_512.png";
 import screenRecipe from "@/public/screens/screen-recipe.png";
@@ -28,37 +30,31 @@ import screenPantry from "@/public/screens/screen-pantry.png";
 const features = [
   {
     Icon: Link2,
-    tint: "mist",
     title: "Import instantly",
     body: "Share a link from TikTok, Instagram, YouTube or any website and AI extracts the full recipe in seconds.",
   },
   {
     Icon: ChefHat,
-    tint: "sand",
     title: "Step-by-step cooking",
     body: "Adjust servings on the fly and follow a clean, hands-free cooking mode from prep to plate.",
   },
   {
     Icon: SlidersHorizontal,
-    tint: "mist",
     title: "Tailor to your diet",
     body: "Set diet and allergy preferences once and every recipe adapts to fit the way you eat.",
   },
   {
     Icon: Leaf,
-    tint: "sand",
     title: "Healthify any meal",
     body: "Get smart ingredient swaps that cut calories and sodium while keeping the flavor.",
   },
   {
     Icon: ShoppingCart,
-    tint: "mist",
     title: "Auto grocery lists",
     body: "Plan your week and Plateful builds an organized grocery list automatically.",
   },
   {
     Icon: Refrigerator,
-    tint: "sand",
     title: "Cook from your pantry",
     body: "Find recipes you can make right now with the ingredients you already have on hand.",
   },
@@ -109,34 +105,17 @@ export default function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      {/* ---------- Nav ---------- */}
-      <nav className="container nav" aria-label="Main">
-        <div className="brand">
-          <span className="brand-mark">
-            <Image src={platefulLogo} alt="" width={38} height={38} priority />
-          </span>
-          <span className="brand-name">Plateful</span>
-        </div>
-        <a
-          href={PLAY_STORE_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="btn btn-primary"
-        >
-          Get the app
-        </a>
-      </nav>
+      <SiteNav />
 
       {/* ---------- 1. Hero ---------- */}
       <header className="container hero">
         <Reveal>
-          <h1>Yeah. It&apos;s been missing this whole time.</h1>
+          <h1>Turn any recipe to fit your diet.</h1>
           <p className="hero-sub">
             Save any recipe from TikTok, YouTube, or the web. Plateful adapts
             it to your diet automatically.
           </p>
           <StoreButtons />
-          <p className="hero-note">Free to download.</p>
         </Reveal>
 
         <Reveal delay={0.15} y={40} className="hero-visual">
@@ -309,9 +288,9 @@ export default function Home() {
           </Reveal>
 
           <RevealStagger className="feat-grid">
-            {features.map(({ Icon, tint, title, body }) => (
+            {features.map(({ Icon, title, body }) => (
               <RevealItem key={title} className="feat-card">
-                <span className={`feat-icon ${tint}`}>
+                <span className="feat-icon">
                   <Icon size={20} strokeWidth={1.9} aria-hidden="true" />
                 </span>
                 <h3>{title}</h3>
@@ -340,19 +319,7 @@ export default function Home() {
       </section>
 
       {/* ---------- 8. Footer ---------- */}
-      <footer className="footer">
-        <div className="footer-inner">
-          <div className="footer-brand">
-            <span className="footer-mark">
-              <Image src={platefulLogo} alt="" width={30} height={30} />
-            </span>
-            <span className="footer-name">Plateful</span>
-          </div>
-          <span className="footer-note">
-            © {new Date().getFullYear()} Plateful. Cook from anywhere.
-          </span>
-        </div>
-      </footer>
+      <SiteFooter />
     </>
   );
 }

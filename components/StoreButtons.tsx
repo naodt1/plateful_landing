@@ -38,6 +38,7 @@ export function StoreButtons({
         >
           <AppleIcon size={17} fill="currentColor" />
           Coming soon on iOS
+          <span className="btn-note">(waitlist)</span>
         </button>
       </div>
 
