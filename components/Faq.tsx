@@ -8,7 +8,7 @@ import { AnimatePresence, motion } from "framer-motion";
 const faqs: { q: string; a: React.ReactNode }[] = [
   {
     q: "Is Plateful free?",
-    a: "Yes. Plateful is free to download and use — saving, tailoring, and healthifying recipes doesn't cost anything.",
+    a: "Yes. Plateful is free to download and use. Saving, tailoring, and healthifying recipes doesn't cost anything.",
   },
   {
     q: "What can I import recipes from?",

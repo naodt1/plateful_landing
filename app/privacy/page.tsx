@@ -36,31 +36,31 @@ export default function PrivacyPage() {
           <p>When you use Plateful, we may collect:</p>
           <ul>
             <li>
-              <strong>Account information</strong> — your email address and
+              <strong>Account information:</strong> your email address and
               any profile details you choose to add.
             </li>
             <li>
-              <strong>Recipe content</strong> — links, screenshots, or text
+              <strong>Recipe content:</strong> links, screenshots, or text
               you share into the app so we can extract and store a recipe
               for you.
             </li>
             <li>
-              <strong>Diet and preference data</strong> — dietary
+              <strong>Diet and preference data:</strong> dietary
               restrictions, allergies, and taste preferences you enter so
               recipes can be tailored to you. This is only used to
               personalize your experience and is never sold.
             </li>
             <li>
-              <strong>Usage data</strong> — how you interact with the app,
+              <strong>Usage data:</strong> how you interact with the app,
               such as which features you use, to help us improve it.
             </li>
             <li>
-              <strong>Device and log data</strong> — basic technical
+              <strong>Device and log data:</strong> basic technical
               information like device type, operating system, and crash
               reports.
             </li>
             <li>
-              <strong>Waitlist submissions</strong> — if you join our iOS
+              <strong>Waitlist submissions:</strong> if you join our iOS
               waitlist on this website, we collect the email address you
               provide, via our form provider, Formspree.
             </li>
