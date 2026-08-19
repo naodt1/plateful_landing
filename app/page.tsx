@@ -14,6 +14,7 @@ import {
 import { Reveal, RevealStagger, RevealItem } from "@/components/Reveal";
 import { StoreButtons } from "@/components/StoreButtons";
 import { ImportFlow } from "@/components/ImportFlow";
+import { Faq } from "@/components/Faq";
 import { SiteNav } from "@/components/SiteNav";
 import { SiteFooter } from "@/components/SiteFooter";
 import { YouTubeIcon, TikTokIcon } from "@/components/icons";
@@ -304,13 +305,29 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ---------- 7. Final CTA ---------- */}
+      {/* ---------- 7. FAQ ---------- */}
+      <section className="faq" aria-labelledby="faq-title">
+        <div className="container">
+          <Reveal className="section-head">
+            <p className="eyebrow">Questions</p>
+            <h2 id="faq-title" className="section-title">
+              Before you ask
+            </h2>
+          </Reveal>
+
+          <Reveal delay={0.1}>
+            <Faq />
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ---------- 8. Final CTA ---------- */}
       <section className="cta" aria-labelledby="cta-title">
         <div className="container">
           <Reveal className="cta-inner">
-            <span className="cta-glow">
+            <span className="cta-badge">
               <span className="cta-mark">
-                <Image src={platefulLogo} alt="" width={58} height={58} />
+                <Image src={platefulLogo} alt="" width={56} height={56} />
               </span>
             </span>
             <h2 id="cta-title">
@@ -325,7 +342,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ---------- 8. Footer ---------- */}
+      {/* ---------- 9. Footer ---------- */}
       <SiteFooter />
     </>
   );
