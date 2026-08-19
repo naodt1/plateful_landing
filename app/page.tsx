@@ -308,8 +308,10 @@ export default function Home() {
       <section className="cta" aria-labelledby="cta-title">
         <div className="container">
           <Reveal className="cta-inner">
-            <span className="cta-mark">
-              <Image src={platefulLogo} alt="" width={58} height={58} />
+            <span className="cta-glow">
+              <span className="cta-mark">
+                <Image src={platefulLogo} alt="" width={58} height={58} />
+              </span>
             </span>
             <h2 id="cta-title">Your next recipe is one link away</h2>
             <p>

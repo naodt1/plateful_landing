@@ -32,13 +32,15 @@ export function StoreButtons({
 
         <button
           type="button"
-          className={`btn btn-ghost${onDark ? " on-dark" : ""}`}
+          className={`btn btn-ghost btn-lg${onDark ? " on-dark" : ""}`}
           aria-haspopup="dialog"
           onClick={() => setWaitlistOpen(true)}
         >
           <AppleIcon size={17} fill="currentColor" />
-          Coming soon on iOS
-          <span className="btn-note">(waitlist)</span>
+          <span className="btn-stack">
+            <span>Coming soon on iOS</span>
+            <span className="btn-note">(waitlist)</span>
+          </span>
         </button>
       </div>
 
