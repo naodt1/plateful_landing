@@ -313,7 +313,9 @@ export default function Home() {
                 <Image src={platefulLogo} alt="" width={58} height={58} />
               </span>
             </span>
-            <h2 id="cta-title">Your next recipe is one link away</h2>
+            <h2 id="cta-title">
+              Adapt any recipe to <span className="accent">your diet</span>.
+            </h2>
             <p>
               Stop screenshotting recipes you never cook. Free to download,
               and your first save takes seconds.

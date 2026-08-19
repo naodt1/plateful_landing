@@ -190,14 +190,15 @@ img {
 }
 
 .btn-ghost.on-dark {
-  color: var(--green-fog);
-  border-color: rgba(255, 255, 255, 0.24);
+  color: #f4f0e8;
+  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .btn-ghost.on-dark:hover {
   color: #fff;
-  border-color: rgba(255, 255, 255, 0.45);
-  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.16);
 }
 
 .btn-note {
@@ -232,6 +233,10 @@ img {
   line-height: 1.15;
 }
 
+.btn-stack-center {
+  align-items: center;
+}
+
 .cta-group {
   display: flex;
   align-items: center;
@@ -262,9 +267,17 @@ img {
   max-width: 13ch;
 }
 
-.hero h1 .accent {
+.hero h1 .accent,
+.cta h2 .accent {
   font-style: italic;
+}
+
+.hero h1 .accent {
   color: var(--green);
+}
+
+.cta h2 .accent {
+  color: var(--cream);
 }
 
 .hero-sub {
@@ -804,7 +817,7 @@ img {
 .cta {
   position: relative;
   overflow: hidden;
-  background: var(--green-deep);
+  background: var(--green);
   color: #f4f0e8;
   padding-top: var(--section-y);
   padding-bottom: var(--section-y);
@@ -1130,7 +1143,9 @@ img {
     position: sticky;
     top: 0;
     z-index: 50;
-    background: var(--cream);
+    background: rgba(250, 247, 241, 0.8);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
     padding-top: 14px;
     padding-bottom: 14px;
     border-bottom: 1px solid var(--border);

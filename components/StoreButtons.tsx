@@ -37,7 +37,7 @@ export function StoreButtons({
           onClick={() => setWaitlistOpen(true)}
         >
           <AppleIcon size={17} fill="currentColor" />
-          <span className="btn-stack">
+          <span className="btn-stack btn-stack-center">
             <span>Coming soon on iOS</span>
             <span className="btn-note">(waitlist)</span>
           </span>
