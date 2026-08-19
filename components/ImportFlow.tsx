@@ -4,6 +4,7 @@ import { ArrowRight, Heart, MessageCircle, Send } from "lucide-react";
 import platefulLogo from "@/public/play_store_512.png";
 import postPhoto from "@/public/screens/post-photo.jpg";
 import screenRecipe from "@/public/screens/screen-recipe.png";
+import screenTailor from "@/public/screens/screen-tailor.png";
 
 /**
  * Visual proof of the import flow: a post you'd actually be looking at,
@@ -83,7 +84,26 @@ export function ImportFlow() {
 
         <p className="flow-cap">
           <span className="step">Step 2</span>
-          <span className="what">Cook it, your way</span>
+          <span className="what">Recipe, extracted</span>
+        </p>
+      </div>
+
+      <div className="flow-arrow" aria-hidden="true">
+        <ArrowRight size={22} strokeWidth={2.4} />
+      </div>
+
+      <div className="flow-step">
+        <div className="phone phone-sm">
+          <Image
+            src={screenTailor}
+            alt="Plateful asking to adapt the recipe to a vegetarian diet using saved preferences"
+            sizes="236px"
+          />
+        </div>
+
+        <p className="flow-cap">
+          <span className="step">Step 3</span>
+          <span className="what">Adapted to your diet</span>
         </p>
       </div>
     </div>

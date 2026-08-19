@@ -143,7 +143,8 @@ export default function Home() {
             </h2>
             <p className="section-sub on-dark">
               Hit share on any post, pick Plateful, and the full recipe lands
-              in your kitchen. Clean, scaled, and cookable.
+              in your kitchen, already adapted to your diet and
+              preferences.
             </p>
           </Reveal>
 
