@@ -50,18 +50,18 @@ export function GlobeIcon() {
   );
 }
 
-export function YouTubeIcon() {
+export function YouTubeIcon({ size = 26 }: { size?: number }) {
   return (
-    <svg width="26" height="26" viewBox="0 0 24 24" aria-hidden="true">
+    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true">
       <rect x="1.5" y="5" width="21" height="14" rx="4.5" fill="#FF0000" />
       <path d="M10 8.7l5.4 3.3L10 15.3z" fill="#fff" />
     </svg>
   );
 }
 
-export function TikTokIcon() {
+export function TikTokIcon({ size = 22 }: { size?: number }) {
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true">
+    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true">
       <path
         d="M17.5 6.6a4.7 4.7 0 0 1-2.9-1v6.9a5.2 5.2 0 1 1-5.2-5.2c.2 0 .4 0 .6.03v2.7a2.6 2.6 0 1 0 1.8 2.5V2h2.7a4.7 4.7 0 0 0 3 4.6z"
         fill="#111"

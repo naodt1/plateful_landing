@@ -721,44 +721,47 @@ img {
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   margin-top: 56px;
 }
 
 .sources-label {
-  font-size: 13px;
-  color: #9db6a6;
-  margin-right: 4px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--green-fog);
+  margin-right: 2px;
 }
 
 .chip {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  background: rgba(255, 255, 255, 0.07);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #e6ebe6;
-  padding: 8px 15px;
+  gap: 10px;
+  background: var(--cream-card);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  color: var(--ink);
+  padding: 9px 18px 9px 12px;
   border-radius: 999px;
-  font-size: 13.5px;
+  font-size: 14px;
   font-weight: 600;
+  box-shadow: 0 4px 12px -4px rgba(0, 0, 0, 0.25);
+  transition: transform 0.18s ease;
 }
 
-.chip-soon {
-  color: #9db6a6;
-  border-style: dashed;
-  border-color: rgba(255, 255, 255, 0.2);
-  background: transparent;
+.chip:hover {
+  transform: translateY(-2px);
 }
 
-.soon-badge {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  background: var(--green-pale);
-  color: var(--green-deep);
-  padding: 2px 7px;
-  border-radius: 999px;
+.chip-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+}
+
+.chip-icon-green {
+  color: var(--green);
 }
 
 /* ---------- Showcase ---------- */

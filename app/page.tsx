@@ -1,6 +1,5 @@
 import Image from "next/image";
 import {
-  Camera,
   Check,
   ChefHat,
   Globe,
@@ -157,21 +156,22 @@ export default function Home() {
             <div className="sources">
               <span className="sources-label">Works with</span>
               <span className="chip">
-                <Globe size={16} strokeWidth={2} aria-hidden="true" />
+                <span className="chip-icon chip-icon-green">
+                  <Globe size={16} strokeWidth={2.2} aria-hidden="true" />
+                </span>
                 Recipe websites
               </span>
               <span className="chip">
-                <YouTubeIcon />
+                <span className="chip-icon">
+                  <YouTubeIcon size={20} />
+                </span>
                 YouTube
               </span>
               <span className="chip">
-                <TikTokIcon />
+                <span className="chip-icon">
+                  <TikTokIcon size={17} />
+                </span>
                 TikTok
-              </span>
-              <span className="chip chip-soon">
-                <Camera size={16} strokeWidth={2} aria-hidden="true" />
-                Screenshots
-                <span className="soon-badge">SOON</span>
               </span>
             </div>
           </Reveal>
