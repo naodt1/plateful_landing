@@ -76,7 +76,9 @@ export default function PrivacyPage() {
             </li>
             <li>
               To personalize recipes, meal plans, and grocery lists to your
-              stated diet and preferences.
+              stated diet and preferences, including using AI to generate
+              ingredient swap recommendations and convert recipes to fit
+              your diet.
             </li>
             <li>To notify you when features you&apos;ve asked about launch.</li>
             <li>To detect, prevent, and address technical issues or abuse.</li>

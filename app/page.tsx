@@ -187,9 +187,9 @@ export default function Home() {
           </span>
           <h2 id="healthify-title">Healthier swaps, same great meal</h2>
           <p className="showcase-body">
-            Let AI suggest healthier ingredient swaps like brown rice for
-            white, olive oil for butter, and less sodium, with the reasoning
-            behind each one and the calories you&apos;ll save.
+            Swap in healthier ingredients like brown rice for white, olive
+            oil for butter, and less sodium, with the reasoning behind each
+            one and the calories you&apos;ll save.
           </p>
           <ul className="check-list">
             <li>
