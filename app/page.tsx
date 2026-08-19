@@ -333,10 +333,7 @@ export default function Home() {
             <h2 id="cta-title">
               Adapt any recipe to <span className="accent">your diet</span>.
             </h2>
-            <p>
-              Stop screenshotting recipes you never cook. Free to download,
-              and your first save takes seconds.
-            </p>
+            <p>Make any recipe fit your needs.</p>
             <StoreButtons center onDark />
           </Reveal>
         </div>
