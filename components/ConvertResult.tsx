@@ -15,6 +15,7 @@ import { motion, useReducedMotion, type Variants } from "framer-motion";
 
 import { PLAY_STORE_URL } from "@/lib/site";
 import type { LinkPreview } from "@/components/RecipeLinkCard";
+import { iconForIngredient } from "@/lib/ingredient-icon";
 
 type Ingredient = { name?: string; amount?: number; unit?: string };
 type Nutrition = {
@@ -106,6 +107,14 @@ export function ConvertResult({
   const nutrition = source?.nutrition ?? null;
   const hasNumbers =
     nutrition && MACROS.some(({ key }) => typeof nutrition[key] === "number");
+
+  // The adapted lines carry the replacement text verbatim, so this is enough
+  // to light up the ones that changed without matching on anything fuzzy.
+  const replaced = new Set(
+    result.changes
+      .map((swap) => swap.replacement?.trim().toLowerCase())
+      .filter(Boolean)
+  );
 
   // Two in the clear is enough to show the work; the rest is what the app is
   // for. Below three there is nothing worth teasing, so they all show.
@@ -322,12 +331,26 @@ export function ConvertResult({
         <section>
           <h4>Ingredients</h4>
           <ul className="ing">
-            {(recipe.ingredients ?? []).map((item, i) => (
-              <li key={`${item.name}-${i}`}>
-                <span className="ing-qty">{formatAmount(item)}</span>
-                <span className="ing-name">{item.name}</span>
-              </li>
-            ))}
+            {(recipe.ingredients ?? []).map((item, i) => {
+              const Mark = iconForIngredient(item.name);
+              const swapped = replaced.has((item.name ?? "").trim().toLowerCase());
+              return (
+                <li
+                  key={`${item.name}-${i}`}
+                  className={swapped ? "ing-row is-swapped" : "ing-row"}
+                >
+                  <span className="ing-icon">
+                    <Mark size={14} strokeWidth={2} aria-hidden="true" />
+                  </span>
+                  <p className="ing-text">
+                    {formatAmount(item) && (
+                      <span className="ing-qty">{formatAmount(item)}</span>
+                    )}
+                    {item.name}
+                  </p>
+                </li>
+              );
+            })}
           </ul>
         </section>
         <section>

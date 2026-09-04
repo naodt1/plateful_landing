@@ -2422,29 +2422,58 @@ img {
   padding: 0;
 }
 
-.ing li {
+.ing-row {
   display: flex;
-  gap: 14px;
-  padding: 10px 0;
-  font-size: 15px;
-  line-height: 1.5;
-  color: var(--ink-soft);
+  align-items: flex-start;
+  gap: 12px;
+  padding: 9px 0;
   border-bottom: 1px solid var(--border);
 }
 
-.ing li:last-child {
+.ing-row:last-child {
   border-bottom: none;
 }
 
+/* The mark carries the rhythm of the column, so the quantity no longer needs
+   its own aligned gutter and can sit inline where it reads as speech. */
+.ing-icon {
+  flex: 0 0 auto;
+  width: 28px;
+  height: 28px;
+  border-radius: 9px;
+  background: var(--green-mist);
+  color: var(--green);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.ing-row.is-swapped .ing-icon {
+  background: var(--green);
+  color: #fff;
+}
+
+.ing-text {
+  margin: 0;
+  padding-top: 4px;
+  min-width: 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--ink-soft);
+  text-wrap: pretty;
+}
+
+.ing-row.is-swapped .ing-text {
+  color: var(--ink);
+  font-weight: 550;
+}
+
 .ing-qty {
-  flex: 0 0 74px;
   color: var(--green);
   font-weight: 650;
   font-variant-numeric: tabular-nums;
-}
-
-.ing-name {
-  min-width: 0;
+  margin-right: 7px;
 }
 
 .steps {
