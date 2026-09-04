@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import {
   ArrowRight,
-  Check,
   Link2,
   Loader2,
   LogOut,
@@ -22,6 +22,9 @@ import {
 
 import { auth, googleProvider } from "@/lib/firebase";
 import { StoreButtons } from "@/components/StoreButtons";
+import { ConvertProgress, type ProgressPhase } from "@/components/ConvertProgress";
+import { RecipeLinkCard, type LinkPreview } from "@/components/RecipeLinkCard";
+import { GoogleIcon } from "@/components/icons";
 
 const DIETS = [
   "None",
@@ -80,6 +83,11 @@ function authMessage(code: string): string {
   }
 }
 
+/** Loose enough to fire while typing, strict enough not to fetch nonsense. */
+function looksLikeUrl(value: string): boolean {
+  return /^https?:\/\/[^\s.]+\.[^\s]{2,}$/i.test(value);
+}
+
 function formatAmount(item: Ingredient): string {
   const amount =
     typeof item.amount === "number" && Number.isFinite(item.amount)
@@ -103,7 +111,10 @@ export function ConvertTool() {
   const [authError, setAuthError] = useState<string | null>(null);
   const [authBusy, setAuthBusy] = useState(false);
 
-  const [converting, setConverting] = useState(false);
+  // null while idle; otherwise the stage the progress animation is showing.
+  const [phase, setPhase] = useState<ProgressPhase | null>(null);
+  const [preview, setPreview] = useState<LinkPreview | null>(null);
+  const [previewing, setPreviewing] = useState(false);
   const [result, setResult] = useState<ConvertResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [usedUp, setUsedUp] = useState(false);
@@ -111,6 +122,8 @@ export function ConvertTool() {
   // Set when someone hits Convert while signed out, so the conversion can
   // resume by itself the moment auth completes.
   const pendingRef = useRef(false);
+  // Guards against a slow preview for an old link landing after a newer one.
+  const previewSeq = useRef(0);
 
   useEffect(() => {
     return onAuthStateChanged(auth, (next) => {
@@ -119,8 +132,53 @@ export function ConvertTool() {
     });
   }, []);
 
+  const loadPreview = useCallback(
+    async (target: string): Promise<LinkPreview | null> => {
+      const seq = ++previewSeq.current;
+      setPreviewing(true);
+      try {
+        const response = await fetch("/api/preview", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url: target }),
+        });
+        const data = await response.json();
+        if (seq !== previewSeq.current) return null;
+        if (!response.ok) {
+          setPreview(null);
+          return null;
+        }
+        setPreview(data as LinkPreview);
+        return data as LinkPreview;
+      } catch {
+        if (seq === previewSeq.current) setPreview(null);
+        return null;
+      } finally {
+        if (seq === previewSeq.current) setPreviewing(false);
+      }
+    },
+    []
+  );
+
+  // Show the card as soon as a link is in the box, not after Convert. The
+  // debounce keeps a half-typed URL from being fetched a dozen times.
+  useEffect(() => {
+    const target = url.trim();
+    // Drop the old card the moment the link changes. Leaving it up would show
+    // one recipe while the box holds a different one, and handleSubmit would
+    // then treat that stale card as the link it had already read.
+    previewSeq.current += 1;
+    setPreview(null);
+    setPreviewing(false);
+
+    if (!looksLikeUrl(target)) return;
+
+    const timer = setTimeout(() => void loadPreview(target), 550);
+    return () => clearTimeout(timer);
+  }, [url, loadPreview]);
+
   async function runConversion(current: User) {
-    setConverting(true);
+    setPhase("converting");
     setError(null);
     setUsedUp(false);
 
@@ -145,23 +203,34 @@ export function ConvertTool() {
     } catch {
       setError("Could not reach the recipe service. Please try again.");
     } finally {
-      setConverting(false);
+      setPhase(null);
     }
   }
 
-  function handleSubmit(event: React.FormEvent) {
+  async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
-    if (!url.trim()) return;
+    const target = url.trim();
+    if (!target) return;
 
     setResult(null);
     setError(null);
     setUsedUp(false);
 
+    // Reading the page is the cheap half of the job, so it happens before the
+    // gate: the wait is real, and it is what fills in the card below.
+    if (!preview) {
+      setPhase("reading");
+      await loadPreview(target);
+    }
+
     if (user) {
-      void runConversion(user);
+      await runConversion(user);
       return;
     }
-    // Gate: capture the link now, convert as soon as they have an account.
+
+    // A link we could not preview still gets converted; plenty of sites hand
+    // a stub to anything that isn't a browser.
+    setPhase(null);
     pendingRef.current = true;
     setShowAuth(true);
   }
@@ -250,12 +319,12 @@ export function ConvertTool() {
         <button
           type="submit"
           className="btn btn-primary btn-lg convert-submit"
-          disabled={converting || !authReady}
+          disabled={phase !== null || !authReady}
         >
-          {converting ? (
+          {phase !== null ? (
             <>
               <Loader2 size={18} className="spin" aria-hidden="true" />
-              Converting
+              {phase === "reading" ? "Reading link" : "Converting"}
             </>
           ) : (
             <>
@@ -265,6 +334,34 @@ export function ConvertTool() {
           )}
         </button>
       </form>
+
+      {/* The pasted link, shown as its own card. While the run is in flight the
+          progress panel owns the card instead, so they never double up. */}
+      <AnimatePresence>
+        {phase === null && (previewing || preview) && (
+          <motion.div
+            key="linkcard"
+            className="convert-linkcard"
+            initial={{ opacity: 0, y: -6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.22 }}
+          >
+            <RecipeLinkCard preview={preview} loading={previewing && !preview} />
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence mode="wait">
+        {phase !== null && (
+          <ConvertProgress
+            key={phase}
+            phase={phase}
+            diet={diet}
+            preview={preview}
+          />
+        )}
+      </AnimatePresence>
 
       <p className="convert-note">
         {user ? (
@@ -395,7 +492,7 @@ export function ConvertTool() {
             onClick={() => setShowAuth(false)}
           >
             <motion.div
-              className="modal-card"
+              className="modal-card auth-card"
               role="dialog"
               aria-modal="true"
               aria-labelledby="auth-title"
@@ -405,13 +502,30 @@ export function ConvertTool() {
               transition={{ duration: 0.24, ease: [0.21, 0.65, 0.36, 1] }}
               onClick={(e) => e.stopPropagation()}
             >
+              <span className="auth-logo">
+                <Image
+                  src="/play_store_512.png"
+                  alt="Plateful"
+                  width={54}
+                  height={54}
+                  priority
+                />
+              </span>
+
               <h3 id="auth-title" className="modal-title">
-                Your recipe is ready
+                {preview ? "We found your recipe" : "Your recipe is ready"}
               </h3>
               <p className="modal-body">
-                Create your free Plateful account to see it. Same account works
-                in the app.
+                Create your free Plateful account to see the{" "}
+                {diet === "None" ? "converted" : diet.toLowerCase()} version.
+                The same account works in the app.
               </p>
+
+              {preview && (
+                <div className="auth-preview">
+                  <RecipeLinkCard preview={preview} />
+                </div>
+              )}
 
               <form className="modal-form" onSubmit={handleAuth}>
                 <input
@@ -456,6 +570,7 @@ export function ConvertTool() {
                 onClick={handleGoogle}
                 disabled={authBusy}
               >
+                <GoogleIcon size={18} />
                 Continue with Google
               </button>
 

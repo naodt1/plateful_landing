@@ -1078,6 +1078,7 @@ img {
   justify-content: center;
   padding: 24px;
   z-index: 100;
+  overflow-y: auto;
 }
 
 .modal-card {
@@ -1087,6 +1088,9 @@ img {
   padding: 38px 34px;
   max-width: 410px;
   width: 100%;
+  /* auto margins centre the card when it fits and let it scroll when it does
+     not, which flex centring alone would clip off the top of the screen. */
+  margin: auto;
   box-shadow: 0 30px 70px -20px rgba(20, 30, 20, 0.5);
 }
 
@@ -1314,6 +1318,10 @@ img {
     padding: 24px 20px;
   }
 
+  .progress-panel {
+    padding: 26px 18px 22px;
+  }
+
   .convert-cols {
     grid-template-columns: 1fr;
     gap: 26px;
@@ -1333,7 +1341,10 @@ img {
     scroll-behavior: auto;
   }
 
-  .phone.floaty {
+  .phone.floaty,
+  .progress-pan-ring,
+  .progress-pan-core,
+  .linkcard-skeleton {
     animation: none;
   }
 
@@ -1712,7 +1723,290 @@ img {
   text-wrap: pretty;
 }
 
+/* ---------- Pasted link preview card ---------- */
+.convert-linkcard {
+  margin-top: 14px;
+}
+
+.linkcard {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 10px;
+  text-align: left;
+}
+
+.linkcard-thumb {
+  flex: 0 0 auto;
+  width: 68px;
+  height: 68px;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--green-mist-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--green-pale);
+}
+
+.linkcard-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.linkcard-body {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.linkcard-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--ink);
+  /* Recipe titles love to run long; two lines is plenty to recognize one. */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.linkcard-host {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted-light);
+}
+
+.linkcard-line {
+  height: 11px;
+  border-radius: 5px;
+}
+
+.linkcard-line.short {
+  width: 45%;
+}
+
+.linkcard-loading .linkcard-body {
+  flex: 1;
+}
+
+.linkcard-skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--green-mist-soft) 0%,
+    #fff 50%,
+    var(--green-mist-soft) 100%
+  );
+  background-size: 220% 100%;
+  animation: shimmer 1.4s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  to {
+    background-position: -220% 0;
+  }
+}
+
+/* ---------- Conversion progress ---------- */
+.progress-panel {
+  margin-top: 20px;
+  background: var(--cream-card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 30px 26px 26px;
+  box-shadow: var(--shadow-card);
+  text-align: center;
+}
+
+/* A pan of rings easing outward: motion that reads as cooking, not loading. */
+.progress-pan {
+  position: relative;
+  width: 62px;
+  height: 62px;
+  margin: 0 auto 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.progress-pan-core {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: var(--green);
+  animation: pan-pulse 1.8s ease-in-out infinite;
+}
+
+.progress-pan-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 999px;
+  border: 2px solid var(--green);
+  opacity: 0;
+  animation: pan-ring 2.4s ease-out infinite;
+}
+
+.progress-pan-ring.delay {
+  animation-delay: 1.2s;
+}
+
+@keyframes pan-ring {
+  0% {
+    transform: scale(0.34);
+    opacity: 0.75;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0;
+  }
+}
+
+@keyframes pan-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.28);
+  }
+}
+
+.progress-head {
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  margin: 0 0 18px;
+  color: var(--ink);
+}
+
+.progress-preview {
+  max-width: 420px;
+  margin: 0 auto 20px;
+}
+
+.progress-steps {
+  list-style: none;
+  margin: 0 auto;
+  padding: 0;
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  text-align: left;
+}
+
+.progress-steps li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14.5px;
+  color: var(--muted-light);
+  transition: color 0.3s ease;
+}
+
+.progress-steps li.is-active {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.progress-steps li.is-done {
+  color: var(--muted);
+}
+
+.progress-mark {
+  flex: 0 0 auto;
+  width: 21px;
+  height: 21px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--border);
+  color: #fff;
+  transition: background 0.3s ease;
+}
+
+.progress-steps li.is-done .progress-mark,
+.progress-steps li.is-active .progress-mark {
+  background: var(--green);
+}
+
+.progress-mark > span {
+  display: flex;
+}
+
+.progress-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--muted-light);
+}
+
+.progress-bar {
+  position: relative;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--border);
+  overflow: hidden;
+  max-width: 420px;
+  margin: 24px auto 0;
+}
+
+.progress-bar span {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: 999px;
+  background: var(--green);
+}
+
 /* auth modal extras */
+.auth-logo {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 18px;
+}
+
+.auth-logo img {
+  border-radius: 14px;
+  box-shadow: 0 8px 20px -8px rgba(20, 40, 26, 0.4);
+}
+
+.auth-card .modal-title,
+.auth-card .modal-body {
+  text-align: center;
+}
+
+.auth-preview {
+  margin: 0 0 20px;
+}
+
+.auth-preview .linkcard {
+  background: var(--green-mist-soft);
+  border-color: var(--border-green);
+}
+
+.auth-preview .linkcard-thumb {
+  width: 52px;
+  height: 52px;
+}
+
+.auth-preview .linkcard-title {
+  font-size: 14px;
+  -webkit-line-clamp: 1;
+}
+
 .auth-or {
   display: flex;
   align-items: center;
@@ -1733,6 +2027,7 @@ img {
 .auth-google {
   width: 100%;
   justify-content: center;
+  gap: 10px;
 }
 
 .auth-switch {
