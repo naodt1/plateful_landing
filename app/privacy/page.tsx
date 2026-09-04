@@ -104,11 +104,10 @@ export default function PrivacyPage() {
 
           <h2>This website</h2>
           <p>
-            plateful.app uses Vercel Analytics to understand aggregate
-            traffic to this site. This does not use cookies to track you
-            across other websites. If you submit the iOS waitlist form,
-            your email is processed by Formspree solely to notify you when
-            iOS launches.
+            This site uses Vercel Analytics to understand aggregate traffic.
+            It does not use cookies to track you across other websites. If you
+            submit the iOS waitlist form, your email is processed by Formspree
+            solely to notify you when iOS launches.
           </p>
 
           <h2>Data retention</h2>
