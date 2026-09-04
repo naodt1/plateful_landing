@@ -9,6 +9,7 @@ import {
 import { claimFreeConversion, hasUsedFreeConversion } from "@/lib/free-conversion";
 import { verifyIdToken } from "@/lib/verify-token";
 import { seal } from "@/lib/envelope";
+import { UNLIMITED_CONVERSIONS, type SealedResult } from "@/lib/conversion";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -41,6 +42,7 @@ const DIETS = [
  */
 const ANON_HOURLY_LIMIT = 6;
 const SIGNED_IN_HOURLY_LIMIT = 10;
+
 const hits = new Map<string, { count: number; resetAt: number }>();
 
 function rateLimited(ip: string, limit: number): boolean {
@@ -63,16 +65,6 @@ function isSupportedUrl(value: string): boolean {
     return false;
   }
 }
-
-export type SealedResult = {
-  url: string;
-  diet: string;
-  original: unknown;
-  tailored: unknown;
-  changes: unknown[];
-  assessment: string | null;
-  warnings: string[];
-};
 
 export async function POST(request: Request) {
   let body: { url?: string; diet?: string; allergies?: string[]; idToken?: string };
@@ -107,7 +99,12 @@ export async function POST(request: Request) {
 
   const ip =
     request.headers.get("x-forwarded-for")?.split(",")[0].trim() || "unknown";
-  if (rateLimited(ip, user ? SIGNED_IN_HOURLY_LIMIT : ANON_HOURLY_LIMIT)) {
+  const limit = UNLIMITED_CONVERSIONS
+    ? 200
+    : user
+      ? SIGNED_IN_HOURLY_LIMIT
+      : ANON_HOURLY_LIMIT;
+  if (rateLimited(ip, limit)) {
     return NextResponse.json(
       { error: "Too many requests. Please try again later." },
       { status: 429 }
@@ -122,7 +119,7 @@ export async function POST(request: Request) {
   const deadline = Date.now() + PIPELINE_BUDGET_MS;
 
   try {
-    if (user && idToken) {
+    if (user && idToken && !UNLIMITED_CONVERSIONS) {
       // Check before spending anything, so a used-up account fails instantly.
       if (await hasUsedFreeConversion(user.uid, idToken)) {
         return NextResponse.json(
@@ -147,7 +144,9 @@ export async function POST(request: Request) {
 
     if (user && idToken) {
       // Best effort: if this races and loses, they still see this one result.
-      await claimFreeConversion(user.uid, idToken, url, diet);
+      if (!UNLIMITED_CONVERSIONS) {
+        await claimFreeConversion(user.uid, idToken, url, diet);
+      }
       return NextResponse.json({ revealed: true, result });
     }
 

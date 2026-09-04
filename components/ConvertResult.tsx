@@ -6,6 +6,7 @@ import {
   Lock,
   RefreshCw,
   BookmarkPlus,
+  Sparkles,
   TriangleAlert,
   UtensilsCrossed,
   Users,
@@ -105,6 +106,13 @@ export function ConvertResult({
   const nutrition = source?.nutrition ?? null;
   const hasNumbers =
     nutrition && MACROS.some(({ key }) => typeof nutrition[key] === "number");
+
+  // Two in the clear is enough to show the work; the rest is what the app is
+  // for. Below three there is nothing worth teasing, so they all show.
+  const VISIBLE_SWAPS = 2;
+  const showAll = result.changes.length <= VISIBLE_SWAPS + 1;
+  const shown = showAll ? result.changes : result.changes.slice(0, VISIBLE_SWAPS);
+  const locked = showAll ? [] : result.changes.slice(VISIBLE_SWAPS);
 
   const meta = [
     source?.servings ? `Serves ${source.servings}` : null,
@@ -234,9 +242,13 @@ export function ConvertResult({
 
       {result.changes.length > 0 && (
         <motion.section className="swaps" variants={rise}>
-          <h4>What changed</h4>
+          <h4>
+            What changed
+            <span className="swaps-count">{result.changes.length} swaps</span>
+          </h4>
+
           <div className="swap-list">
-            {result.changes.map((swap, i) => (
+            {shown.map((swap, i) => (
               <motion.div
                 className="swap"
                 key={`${swap.original}-${i}`}
@@ -259,6 +271,50 @@ export function ConvertResult({
               </motion.div>
             ))}
           </div>
+
+          {locked.length > 0 && (
+            <motion.div
+              className="swaps-locked"
+              initial={still ? undefined : { opacity: 0 }}
+              animate={still ? undefined : { opacity: 1 }}
+              transition={{ duration: 0.7, delay: 0.34, ease: EASE }}
+            >
+              <div className="swap-list" aria-hidden="true">
+                {locked.map((swap, i) => (
+                  <div className="swap" key={`locked-${i}`}>
+                    <p className="swap-row">
+                      <span className="swap-from">{swap.original}</span>
+                      <span className="swap-arrow">
+                        <ArrowRight size={12} strokeWidth={2.8} />
+                      </span>
+                      <span className="swap-to">{swap.replacement}</span>
+                    </p>
+                    {swap.reason && <p className="swap-why">{swap.reason}</p>}
+                  </div>
+                ))}
+              </div>
+
+              <div className="swaps-veil">
+                <span className="swaps-veil-chip">
+                  <Lock size={12} strokeWidth={2.6} aria-hidden="true" />
+                  {locked.length} more {locked.length === 1 ? "swap" : "swaps"}
+                </span>
+                <p>
+                  The rest of the swaps, and the reasoning behind each one, open
+                  in the app.
+                </p>
+                <a
+                  href={PLAY_STORE_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn-primary swaps-veil-btn"
+                >
+                  <Sparkles size={16} strokeWidth={2.2} aria-hidden="true" />
+                  See every swap
+                </a>
+              </div>
+            </motion.div>
+          )}
         </motion.section>
       )}
 

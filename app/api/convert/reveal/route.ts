@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 import { claimFreeConversion, hasUsedFreeConversion } from "@/lib/free-conversion";
 import { verifyIdToken } from "@/lib/verify-token";
 import { open } from "@/lib/envelope";
-import type { SealedResult } from "@/app/api/convert/route";
+import { UNLIMITED_CONVERSIONS, type SealedResult } from "@/lib/conversion";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -43,10 +43,15 @@ export async function POST(request: Request) {
   }
 
   try {
-    if (await hasUsedFreeConversion(user.uid, idToken)) {
-      return NextResponse.json({ error: "free_conversion_used" }, { status: 403 });
+    if (!UNLIMITED_CONVERSIONS) {
+      if (await hasUsedFreeConversion(user.uid, idToken)) {
+        return NextResponse.json(
+          { error: "free_conversion_used" },
+          { status: 403 }
+        );
+      }
+      await claimFreeConversion(user.uid, idToken, result.url, result.diet);
     }
-    await claimFreeConversion(user.uid, idToken, result.url, result.diet);
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "Something went wrong.";
