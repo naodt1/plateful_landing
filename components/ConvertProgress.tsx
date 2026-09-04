@@ -34,10 +34,13 @@ export function ConvertProgress({
   phase,
   diet,
   preview,
+  complete = false,
 }: {
   phase: ProgressPhase;
   diet: string;
   preview: LinkPreview | null;
+  /** The work is done: tick every remaining step before the panel gives way. */
+  complete?: boolean;
 }) {
   const steps = stepsFor(phase, diet);
   const pacing = pacingFor(phase);
@@ -59,10 +62,11 @@ export function ConvertProgress({
   }, [phase, diet]);
 
   const total = pacing.slice(0, steps.length).reduce((sum, ms) => sum + ms, 0);
+  const reached = complete ? steps.length : active;
 
   return (
     <motion.div
-      className="progress-panel"
+      className={complete ? "progress-panel is-complete" : "progress-panel"}
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
@@ -70,13 +74,30 @@ export function ConvertProgress({
       aria-live="polite"
     >
       <div className="progress-pan" aria-hidden="true">
-        <span className="progress-pan-ring" />
-        <span className="progress-pan-ring delay" />
-        <span className="progress-pan-core" />
+        {complete ? (
+          <motion.span
+            className="progress-pan-done"
+            initial={{ scale: 0.5, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.32, ease: [0.21, 0.65, 0.36, 1] }}
+          >
+            <Check size={26} strokeWidth={3} />
+          </motion.span>
+        ) : (
+          <>
+            <span className="progress-pan-ring" />
+            <span className="progress-pan-ring delay" />
+            <span className="progress-pan-core" />
+          </>
+        )}
       </div>
 
       <p className="progress-head">
-        {phase === "reading" ? "Reading your link" : "Converting your recipe"}
+        {complete
+          ? "Your recipe is ready"
+          : phase === "reading"
+            ? "Reading your link"
+            : "Converting your recipe"}
       </p>
 
       {preview && (
@@ -90,12 +111,12 @@ export function ConvertProgress({
           <li
             key={step}
             className={
-              i < active ? "is-done" : i === active ? "is-active" : "is-waiting"
+              i < reached ? "is-done" : i === reached ? "is-active" : "is-waiting"
             }
           >
             <span className="progress-mark">
               <AnimatePresence mode="wait" initial={false}>
-                {i < active ? (
+                {i < reached ? (
                   <motion.span
                     key="done"
                     initial={{ scale: 0.4, opacity: 0 }}
@@ -104,7 +125,7 @@ export function ConvertProgress({
                   >
                     <Check size={13} strokeWidth={3} aria-hidden="true" />
                   </motion.span>
-                ) : i === active ? (
+                ) : i === reached ? (
                   <motion.span
                     key="active"
                     initial={{ scale: 0.4, opacity: 0 }}
@@ -128,8 +149,12 @@ export function ConvertProgress({
             response knows when this is actually done. */}
         <motion.span
           initial={{ width: "6%" }}
-          animate={{ width: "94%" }}
-          transition={{ duration: total / 1000, ease: "easeOut" }}
+          animate={{ width: complete ? "100%" : "94%" }}
+          transition={
+            complete
+              ? { duration: 0.4, ease: "easeOut" }
+              : { duration: total / 1000, ease: "easeOut" }
+          }
         />
       </div>
     </motion.div>

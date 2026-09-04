@@ -1,15 +1,26 @@
 import { NextResponse } from "next/server";
 
 import {
+  ConversionTimeoutError,
   NoRecipeFoundError,
   extractRecipe,
   tailorRecipe,
 } from "@/lib/plateful-backend";
 import { claimFreeConversion, hasUsedFreeConversion } from "@/lib/free-conversion";
 import { verifyIdToken } from "@/lib/verify-token";
+import { seal } from "@/lib/envelope";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+
+/**
+ * 60s is the ceiling on Vercel's Hobby plan and well within Pro's, so it is the
+ * safe number to ask for. The pipeline is held to a shorter deadline than this
+ * on purpose: a step that overruns should fail with a sentence someone can act
+ * on, not be cut off by the platform and surface as a bare gateway error.
+ */
+export const maxDuration = 60;
+const PIPELINE_BUDGET_MS = 54_000;
 
 const DIETS = [
   "None",
@@ -22,14 +33,17 @@ const DIETS = [
 ];
 
 /**
- * Coarse per-IP throttle. Sign-in is already required before anything here
- * costs money, so this only exists to blunt scripted bursts. It lives in
- * instance memory, so it is a speed bump rather than a guarantee.
+ * Coarse per-IP throttle, and the only thing standing between a script and the
+ * AI bill: the recipe is now converted before anyone signs in, so a signed out
+ * request costs real money. Signed in callers are attributable and get the
+ * looser limit. It lives in instance memory, so it is a speed bump rather than
+ * a guarantee.
  */
-const HOURLY_LIMIT = 10;
+const ANON_HOURLY_LIMIT = 6;
+const SIGNED_IN_HOURLY_LIMIT = 10;
 const hits = new Map<string, { count: number; resetAt: number }>();
 
-function rateLimited(ip: string): boolean {
+function rateLimited(ip: string, limit: number): boolean {
   const now = Date.now();
   const entry = hits.get(ip);
 
@@ -38,7 +52,7 @@ function rateLimited(ip: string): boolean {
     return false;
   }
   entry.count += 1;
-  return entry.count > HOURLY_LIMIT;
+  return entry.count > limit;
 }
 
 function isSupportedUrl(value: string): boolean {
@@ -50,6 +64,16 @@ function isSupportedUrl(value: string): boolean {
   }
 }
 
+export type SealedResult = {
+  url: string;
+  diet: string;
+  original: unknown;
+  tailored: unknown;
+  changes: unknown[];
+  assessment: string | null;
+  warnings: string[];
+};
+
 export async function POST(request: Request) {
   let body: { url?: string; diet?: string; allergies?: string[]; idToken?: string };
   try {
@@ -59,21 +83,6 @@ export async function POST(request: Request) {
   }
 
   const { url, diet = "None", allergies = [], idToken } = body;
-
-  if (!idToken) {
-    return NextResponse.json(
-      { error: "Sign in to convert a recipe." },
-      { status: 401 }
-    );
-  }
-
-  const user = await verifyIdToken(idToken);
-  if (!user) {
-    return NextResponse.json(
-      { error: "Your session expired. Please sign in again." },
-      { status: 401 }
-    );
-  }
 
   if (!url || !isSupportedUrl(url)) {
     return NextResponse.json(
@@ -85,9 +94,20 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Unknown diet." }, { status: 400 });
   }
 
+  // Signing in is optional here. Someone already signed in gets their result
+  // straight back, and gets told before anything is spent if their free one is
+  // gone. Everyone else gets it sealed and opens it at /api/convert/reveal.
+  const user = idToken ? await verifyIdToken(idToken) : null;
+  if (idToken && !user) {
+    return NextResponse.json(
+      { error: "Your session expired. Please sign in again." },
+      { status: 401 }
+    );
+  }
+
   const ip =
     request.headers.get("x-forwarded-for")?.split(",")[0].trim() || "unknown";
-  if (rateLimited(ip)) {
+  if (rateLimited(ip, user ? SIGNED_IN_HOURLY_LIMIT : ANON_HOURLY_LIMIT)) {
     return NextResponse.json(
       { error: "Too many requests. Please try again later." },
       { status: 429 }
@@ -99,36 +119,54 @@ export async function POST(request: Request) {
     .filter(Boolean)
     .slice(0, 12);
 
+  const deadline = Date.now() + PIPELINE_BUDGET_MS;
+
   try {
-    // Check before spending anything, so a used-up account fails instantly.
-    if (await hasUsedFreeConversion(user.uid, idToken)) {
-      return NextResponse.json(
-        { error: "free_conversion_used" },
-        { status: 403 }
-      );
+    if (user && idToken) {
+      // Check before spending anything, so a used-up account fails instantly.
+      if (await hasUsedFreeConversion(user.uid, idToken)) {
+        return NextResponse.json(
+          { error: "free_conversion_used" },
+          { status: 403 }
+        );
+      }
     }
 
-    // Do the work first, then claim. Claiming up front would be tighter
-    // against parallel requests, but it would also burn someone's single free
-    // conversion when a link is broken or the rewrite fails, which is a much
-    // worse trade for a funnel. Parallel abuse stays bounded by the IP limit.
-    const recipe = await extractRecipe(url);
-    const tailored = await tailorRecipe(recipe, diet, cleanAllergies);
+    const recipe = await extractRecipe(url, deadline);
+    const tailored = await tailorRecipe(recipe, diet, cleanAllergies, deadline);
 
-    // Best effort: if this races and loses, they still see this one result.
-    await claimFreeConversion(user.uid, idToken, url, diet);
-
-    return NextResponse.json({
+    const result: SealedResult = {
+      url,
+      diet,
       original: recipe,
       tailored: tailored.tailoredRecipe,
       changes: tailored.changes,
       assessment: tailored.overallAssessment ?? null,
       warnings: tailored.warnings ?? [],
-      diet,
+    };
+
+    if (user && idToken) {
+      // Best effort: if this races and loses, they still see this one result.
+      await claimFreeConversion(user.uid, idToken, url, diet);
+      return NextResponse.json({ revealed: true, result });
+    }
+
+    return NextResponse.json({
+      revealed: false,
+      envelope: seal(result),
+      // Enough to make the wait feel finished without giving the recipe away.
+      teaser: {
+        title: tailored.tailoredRecipe.title ?? recipe.title ?? null,
+        changeCount: tailored.changes.length,
+        diet,
+      },
     });
   } catch (error) {
     if (error instanceof NoRecipeFoundError) {
       return NextResponse.json({ error: error.message }, { status: 422 });
+    }
+    if (error instanceof ConversionTimeoutError) {
+      return NextResponse.json({ error: error.message }, { status: 504 });
     }
     const message =
       error instanceof Error ? error.message : "Something went wrong.";

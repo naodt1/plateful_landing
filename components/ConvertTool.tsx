@@ -4,8 +4,10 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import {
   ArrowRight,
+  BookmarkPlus,
   Link2,
   Loader2,
+  Lock,
   LogOut,
   Sparkles,
   TriangleAlert,
@@ -21,6 +23,7 @@ import {
 } from "firebase/auth";
 
 import { auth, googleProvider } from "@/lib/firebase";
+import { PLAY_STORE_URL } from "@/lib/site";
 import { StoreButtons } from "@/components/StoreButtons";
 import { ConvertProgress, type ProgressPhase } from "@/components/ConvertProgress";
 import { RecipeLinkCard, type LinkPreview } from "@/components/RecipeLinkCard";
@@ -53,6 +56,11 @@ type ConvertResponse = {
   changes: Swap[];
   assessment: string | null;
   warnings: string[];
+  diet: string;
+};
+type Teaser = {
+  title: string | null;
+  changeCount: number;
   diet: string;
 };
 
@@ -97,6 +105,8 @@ function formatAmount(item: Ingredient): string {
   return [amount, item.unit].filter(Boolean).join(" ").trim();
 }
 
+const wait = (ms: number) => new Promise((done) => setTimeout(done, ms));
+
 export function ConvertTool() {
   const [user, setUser] = useState<User | null>(null);
   const [authReady, setAuthReady] = useState(false);
@@ -113,15 +123,20 @@ export function ConvertTool() {
 
   // null while idle; otherwise the stage the progress animation is showing.
   const [phase, setPhase] = useState<ProgressPhase | null>(null);
+  const [complete, setComplete] = useState(false);
   const [preview, setPreview] = useState<LinkPreview | null>(null);
   const [previewing, setPreviewing] = useState(false);
   const [result, setResult] = useState<ConvertResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [usedUp, setUsedUp] = useState(false);
 
-  // Set when someone hits Convert while signed out, so the conversion can
-  // resume by itself the moment auth completes.
-  const pendingRef = useRef(false);
+  // A finished conversion the server has sealed, waiting on an account to open
+  // it. The page cannot read it, which is what keeps the gate meaningful.
+  const [pending, setPending] = useState<{
+    envelope: string;
+    teaser: Teaser;
+  } | null>(null);
+
   // Guards against a slow preview for an old link landing after a newer one.
   const previewSeq = useRef(0);
 
@@ -177,17 +192,87 @@ export function ConvertTool() {
     return () => clearTimeout(timer);
   }, [url, loadPreview]);
 
-  async function runConversion(current: User) {
+  /** Lets every step finish ticking before the panel gives way. */
+  async function finishAnimation() {
+    setComplete(true);
+    await wait(1200);
+    setPhase(null);
+    setComplete(false);
+  }
+
+  async function handleSubmit(event: React.FormEvent) {
+    event.preventDefault();
+    const target = url.trim();
+    if (!target) return;
+
+    setResult(null);
+    setError(null);
+    setUsedUp(false);
+    setPending(null);
+
+    // Reading the page is the cheap half of the job, so it runs first and
+    // fills in the card below.
+    if (!preview) {
+      setPhase("reading");
+      await loadPreview(target);
+    }
+
     setPhase("converting");
+
+    try {
+      const idToken = user ? await user.getIdToken() : undefined;
+      const response = await fetch("/api/convert", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: target, diet, idToken }),
+        // Longer than the server's own budget, so a real answer always wins
+        // the race and only a genuinely dead request trips this.
+        signal: AbortSignal.timeout(70_000),
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        if (data.error === "free_conversion_used") {
+          setUsedUp(true);
+        } else {
+          setError(data.error ?? "Something went wrong.");
+        }
+        setPhase(null);
+        return;
+      }
+
+      // Every checkmark lands before anything else happens on screen.
+      await finishAnimation();
+
+      if (data.revealed) {
+        setResult(data.result as ConvertResponse);
+        return;
+      }
+
+      setPending({ envelope: data.envelope, teaser: data.teaser as Teaser });
+      setShowAuth(true);
+    } catch (err) {
+      const timedOut = err instanceof Error && err.name === "TimeoutError";
+      setError(
+        timedOut
+          ? "That took longer than expected. Please try again."
+          : "Could not reach the recipe service. Please try again."
+      );
+      setPhase(null);
+    }
+  }
+
+  /** Opens the sealed result now that there is an account to book it against. */
+  async function revealPending(current: User, envelope: string) {
     setError(null);
     setUsedUp(false);
 
     try {
       const idToken = await current.getIdToken();
-      const response = await fetch("/api/convert", {
+      const response = await fetch("/api/convert/reveal", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url, diet, idToken }),
+        body: JSON.stringify({ envelope, idToken }),
       });
       const data = await response.json();
 
@@ -199,40 +284,16 @@ export function ConvertTool() {
         }
         return;
       }
-      setResult(data as ConvertResponse);
+      setResult(data.result as ConvertResponse);
+      setPending(null);
     } catch {
-      setError("Could not reach the recipe service. Please try again.");
-    } finally {
-      setPhase(null);
+      setError("Could not open your recipe. Please try again.");
     }
   }
 
-  async function handleSubmit(event: React.FormEvent) {
-    event.preventDefault();
-    const target = url.trim();
-    if (!target) return;
-
-    setResult(null);
-    setError(null);
-    setUsedUp(false);
-
-    // Reading the page is the cheap half of the job, so it happens before the
-    // gate: the wait is real, and it is what fills in the card below.
-    if (!preview) {
-      setPhase("reading");
-      await loadPreview(target);
-    }
-
-    if (user) {
-      await runConversion(user);
-      return;
-    }
-
-    // A link we could not preview still gets converted; plenty of sites hand
-    // a stub to anything that isn't a browser.
-    setPhase(null);
-    pendingRef.current = true;
-    setShowAuth(true);
+  async function afterAuth(current: User) {
+    setShowAuth(false);
+    if (pending) await revealPending(current, pending.envelope);
   }
 
   async function handleAuth(event: React.FormEvent) {
@@ -245,12 +306,7 @@ export function ConvertTool() {
         mode === "signup"
           ? await createUserWithEmailAndPassword(auth, email, password)
           : await signInWithEmailAndPassword(auth, email, password);
-
-      setShowAuth(false);
-      if (pendingRef.current) {
-        pendingRef.current = false;
-        await runConversion(credential.user);
-      }
+      await afterAuth(credential.user);
     } catch (err) {
       const code =
         typeof err === "object" && err && "code" in err
@@ -267,11 +323,7 @@ export function ConvertTool() {
     setAuthError(null);
     try {
       const credential = await signInWithPopup(auth, googleProvider);
-      setShowAuth(false);
-      if (pendingRef.current) {
-        pendingRef.current = false;
-        await runConversion(credential.user);
-      }
+      await afterAuth(credential.user);
     } catch (err) {
       const code =
         typeof err === "object" && err && "code" in err
@@ -282,6 +334,8 @@ export function ConvertTool() {
       setAuthBusy(false);
     }
   }
+
+  const busy = phase !== null;
 
   return (
     <div className="convert">
@@ -319,9 +373,9 @@ export function ConvertTool() {
         <button
           type="submit"
           className="btn btn-primary btn-lg convert-submit"
-          disabled={phase !== null || !authReady}
+          disabled={busy || !authReady}
         >
-          {phase !== null ? (
+          {busy ? (
             <>
               <Loader2 size={18} className="spin" aria-hidden="true" />
               {phase === "reading" ? "Reading link" : "Converting"}
@@ -338,7 +392,7 @@ export function ConvertTool() {
       {/* The pasted link, shown as its own card. While the run is in flight the
           progress panel owns the card instead, so they never double up. */}
       <AnimatePresence>
-        {phase === null && (previewing || preview) && (
+        {!busy && (previewing || preview) && (
           <motion.div
             key="linkcard"
             className="convert-linkcard"
@@ -359,6 +413,7 @@ export function ConvertTool() {
             phase={phase}
             diet={diet}
             preview={preview}
+            complete={complete}
           />
         )}
       </AnimatePresence>
@@ -377,7 +432,7 @@ export function ConvertTool() {
             </button>
           </>
         ) : (
-          "One free conversion. You'll sign in to see the result."
+          "One free conversion. No card needed."
         )}
       </p>
 
@@ -399,6 +454,20 @@ export function ConvertTool() {
         </div>
       )}
 
+      {/* Someone who signed in but has not opened their result yet. */}
+      {pending && !result && !usedUp && (
+        <div className="convert-reopen">
+          <p>Your converted recipe is waiting.</p>
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={() => setShowAuth(true)}
+          >
+            Open it
+          </button>
+        </div>
+      )}
+
       <AnimatePresence>
         {result && (
           <motion.div
@@ -417,6 +486,21 @@ export function ConvertTool() {
             {result.assessment && (
               <p className="convert-assessment">{result.assessment}</p>
             )}
+
+            <div className="convert-save">
+              <a
+                href={PLAY_STORE_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn btn-primary convert-save-btn"
+              >
+                <BookmarkPlus size={17} strokeWidth={2.2} aria-hidden="true" />
+                Save to my account
+              </a>
+              <span className="convert-save-note">
+                Keeps it in your Plateful kitchen, on every device.
+              </span>
+            </div>
 
             {result.changes.length > 0 && (
               <div className="convert-swaps">
@@ -468,18 +552,38 @@ export function ConvertTool() {
                 ))}
               </div>
             )}
-
-            <div className="convert-after">
-              <h4>That was your free one</h4>
-              <p>
-                Plateful does this for every recipe you save, and remembers
-                your diet so you never have to pick it again.
-              </p>
-              <StoreButtons center onDark />
-            </div>
           </motion.div>
         )}
       </AnimatePresence>
+
+      {result && (
+        <motion.div
+          className="convert-nutrition"
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: 0.1, ease: [0.21, 0.65, 0.36, 1] }}
+        >
+          <div className="nutri-tiles" aria-hidden="true">
+            {["Calories", "Protein", "Carbs", "Fat"].map((label) => (
+              <div className="nutri-tile" key={label}>
+                <span className="nutri-label">{label}</span>
+                <span className="nutri-blur" />
+              </div>
+            ))}
+            <span className="nutri-lock">
+              <Lock size={18} strokeWidth={2.2} />
+            </span>
+          </div>
+
+          <h4>Want to see the changed nutritional values?</h4>
+          <p>
+            Plateful shows what every swap did to the calories, protein, carbs
+            and fat, side by side with the original. That was your free
+            conversion, and the app does this for every recipe you save.
+          </p>
+          <StoreButtons center onDark />
+        </motion.div>
+      )}
 
       <AnimatePresence>
         {showAuth && (
@@ -513,12 +617,29 @@ export function ConvertTool() {
               </span>
 
               <h3 id="auth-title" className="modal-title">
-                {preview ? "We found your recipe" : "Your recipe is ready"}
+                {pending?.teaser.title
+                  ? `${pending.teaser.title} is ready`
+                  : "Your recipe is ready"}
               </h3>
               <p className="modal-body">
-                Create your free Plateful account to see the{" "}
-                {diet === "None" ? "converted" : diet.toLowerCase()} version.
-                The same account works in the app.
+                {pending && pending.teaser.changeCount > 0 ? (
+                  <>
+                    We swapped {pending.teaser.changeCount}{" "}
+                    {pending.teaser.changeCount === 1
+                      ? "ingredient"
+                      : "ingredients"}{" "}
+                    for the{" "}
+                    {pending.teaser.diet === "None"
+                      ? "converted"
+                      : pending.teaser.diet.toLowerCase()}{" "}
+                    version. Create your free account to open it and keep it.
+                  </>
+                ) : (
+                  <>
+                    Create your free account to open it and keep it. The same
+                    account works in the Plateful app.
+                  </>
+                )}
               </p>
 
               {preview && (
@@ -555,8 +676,8 @@ export function ConvertTool() {
                   {authBusy
                     ? "Just a moment..."
                     : mode === "signup"
-                      ? "Create account and convert"
-                      : "Sign in and convert"}
+                      ? "Create account and open"
+                      : "Sign in and open"}
                 </button>
               </form>
 
