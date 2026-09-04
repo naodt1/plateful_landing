@@ -22,16 +22,7 @@ import {
 import { ConvertProgress, type ProgressPhase } from "@/components/ConvertProgress";
 import { RecipeLinkCard, type LinkPreview } from "@/components/RecipeLinkCard";
 import { GoogleIcon } from "@/components/icons";
-
-const DIETS = [
-  "None",
-  "Vegan",
-  "Vegetarian",
-  "Keto",
-  "Paleo",
-  "Gluten-Free",
-  "Halal",
-];
+import { DietPicker } from "@/components/DietPicker";
 
 type Teaser = {
   title: string | null;
@@ -321,20 +312,10 @@ export function ConvertTool() {
           </span>
         </label>
 
-        <label className="convert-field convert-field-diet">
+        <div className="convert-field convert-field-diet">
           <span className="convert-label">Convert to</span>
-          <select
-            className="convert-select"
-            value={diet}
-            onChange={(e) => setDiet(e.target.value)}
-          >
-            {DIETS.map((option) => (
-              <option key={option} value={option}>
-                {option === "None" ? "No restrictions" : option}
-              </option>
-            ))}
-          </select>
-        </label>
+          <DietPicker value={diet} onChange={setDiet} disabled={busy} />
+        </div>
 
         <button
           type="submit"
