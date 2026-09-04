@@ -1202,15 +1202,9 @@ img {
 
 /* ---------- Responsive ---------- */
 @media (max-width: 900px) {
-  :root {
-    --section-y: 72px;
-    --gutter: 22px;
-  }
-
   .nav-actions {
     gap: 14px;
   }
-
   .nav {
     position: sticky;
     top: 0;
@@ -1222,16 +1216,13 @@ img {
     padding-bottom: 14px;
     border-bottom: 1px solid var(--border);
   }
-
   .nav .brand-name {
     font-size: 20px;
   }
-
   .nav .btn-primary {
     padding: 10px 16px;
     font-size: 14px;
   }
-
   .hero {
     grid-template-columns: 1fr;
     gap: 52px;
@@ -1239,100 +1230,60 @@ img {
     padding-top: 28px;
     padding-bottom: 64px;
   }
-
   .hero h1 {
     max-width: none;
   }
-
   .hero-sub {
     margin-left: auto;
     margin-right: auto;
   }
-
   .hero .cta-group {
     justify-content: center;
   }
-
   .feat-grid {
     grid-template-columns: 1fr;
     max-width: 430px;
     margin: 0 auto;
   }
-
   .flow {
     grid-template-columns: 1fr;
     gap: 22px;
     max-width: 300px;
   }
-
   .flow-arrow {
     transform: rotate(90deg);
     margin: 0 auto;
   }
-
   .showcase {
     grid-template-columns: 1fr;
     gap: 44px;
     text-align: center;
   }
-
   .showcase .check-list {
     align-items: center;
   }
-
   .showcase-visual.first-on-mobile {
     order: -1;
   }
-
   .gallery-grid {
     grid-template-columns: 1fr;
     gap: 48px;
   }
-
   .footer-top {
     grid-template-columns: 1fr;
     gap: 36px;
     text-align: center;
   }
-
   .footer-brand {
     justify-content: center;
   }
-
   .footer-tagline {
     margin-left: auto;
     margin-right: auto;
   }
-
   .footer-bottom {
     justify-content: center;
     text-align: center;
-  }
-
-  .convert-form {
-    grid-template-columns: 1fr;
-    padding: 18px;
-  }
-
-  .progress-panel {
-    padding: 26px 18px 22px;
-  }
-
-  .nutri-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .recipe-body {
-    grid-template-columns: 1fr;
-    gap: 30px;
-  }
-
-  .recipe-hero {
-    border-radius: 18px;
-  }
-
-  .recipe-actions {
-    flex-direction: column;
   }
 }
 
@@ -2407,13 +2358,114 @@ img {
 }
 
 /* ---------- Ingredients and method ---------- */
+/* Clipped on purpose. A few ingredients and the opening of the method show
+   the rewrite is real; the part you would shop and cook from is the app's. */
 .recipe-body {
+  position: relative;
   display: grid;
   grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.12fr);
   gap: 44px;
   margin-top: 40px;
   padding-top: 32px;
   border-top: 1px solid var(--border);
+  max-height: 380px;
+  overflow: hidden;
+}
+
+.body-veil {
+  position: absolute;
+  z-index: 2;
+  inset: auto 0 0 0;
+  height: 300px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 13px;
+  padding-bottom: 6px;
+  text-align: center;
+  background: linear-gradient(
+    to bottom,
+    rgba(250, 247, 241, 0) 0%,
+    rgba(250, 247, 241, 0.82) 38%,
+    var(--cream) 72%
+  );
+}
+
+.body-veil p {
+  margin: 0;
+  max-width: 34ch;
+  font-size: 14.8px;
+  line-height: 1.55;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.body-veil-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--green-deep);
+  color: #f4f0e8;
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.body-veil-btn {
+  padding: 13px 26px;
+}
+
+/* ---------- The bar that follows them down ---------- */
+/* The bar is fixed, so the document needs the room at its foot or the footer
+   runs underneath it at full scroll. Keyed off the bar's own presence, since
+   it only exists once there is a result. */
+body:has(.recipe-bar) {
+  padding-bottom: 84px;
+}
+
+.recipe-bar {
+  position: fixed;
+  z-index: 60;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  flex-wrap: wrap;
+  padding: 13px 24px calc(13px + env(safe-area-inset-bottom));
+  background: var(--green-deep);
+  box-shadow: 0 -12px 34px -14px rgba(20, 40, 26, 0.55);
+}
+
+.recipe-bar p {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  min-width: 0;
+}
+
+.recipe-bar strong {
+  font-size: 15px;
+  font-weight: 650;
+  color: #fff;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.recipe-bar span {
+  font-size: 13.2px;
+  color: var(--green-fog);
+}
+
+.recipe-bar-btn {
+  flex: 0 0 auto;
+  padding: 12px 24px;
 }
 
 .ing {
@@ -2527,6 +2579,46 @@ img {
   font-size: 14.5px;
   line-height: 1.55;
   color: var(--muted);
+}
+
+/* The convert page and the adapted recipe are defined below the main
+   responsive block, so their mobile rules have to sit below them too:
+   at equal specificity the later declaration is the one that wins. */
+@media (max-width: 900px) {
+  .convert-form {
+    grid-template-columns: 1fr;
+    padding: 18px;
+  }
+  .progress-panel {
+    padding: 26px 18px 22px;
+  }
+  .nutri-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .recipe-body {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+  .recipe-hero {
+    border-radius: 18px;
+  }
+  .recipe-actions {
+    flex-direction: column;
+  }
+  .recipe-body {
+    max-height: 300px;
+  }
+  .recipe-bar {
+    gap: 12px;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+  .recipe-bar span {
+    display: none;
+  }
+  .recipe-bar p {
+    flex: 1;
+  }
 }
 
 /* ---------- Legal pages ---------- */

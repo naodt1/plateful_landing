@@ -6,6 +6,7 @@ import {
   Lock,
   RefreshCw,
   BookmarkPlus,
+  Smartphone,
   Sparkles,
   TriangleAlert,
   UtensilsCrossed,
@@ -218,8 +219,8 @@ export function ConvertResult({
 
         <p className="nutri-foot">
           {hasNumbers
-            ? "Top figures are the original recipe. Plateful works out what your swaps did to each one."
-            : "Plateful works out the calories, protein, carbs and fat for the version you just made."}
+            ? "That is the original. See what your swaps did to every number."
+            : "See the calories, protein, carbs and fat for the version you just made."}
         </p>
       </motion.section>
 
@@ -245,8 +246,8 @@ export function ConvertResult({
       </motion.div>
 
       <motion.p className="recipe-actions-note" variants={rise}>
-        That was your free conversion. The app keeps every recipe you adapt and
-        converts as many as you like.
+        That was your one free conversion. Plateful converts every recipe you
+        save, and keeps them all in one place.
       </motion.p>
 
       {result.changes.length > 0 && (
@@ -309,8 +310,7 @@ export function ConvertResult({
                   {locked.length} more {locked.length === 1 ? "swap" : "swaps"}
                 </span>
                 <p>
-                  The rest of the swaps, and the reasoning behind each one, open
-                  in the app.
+                  Every other swap, and the reason behind each one, in the app.
                 </p>
                 <a
                   href={PLAY_STORE_URL}
@@ -327,7 +327,29 @@ export function ConvertResult({
         </motion.section>
       )}
 
+      {/* Enough of the list and the method to prove the rewrite is real, and
+          not enough to shop from or cook from. That is the trade the page is
+          making, so it is one gate across both columns rather than two. */}
       <motion.div className="recipe-body" variants={rise}>
+        <div className="body-veil">
+          <span className="body-veil-chip">
+            <Lock size={12} strokeWidth={2.6} aria-hidden="true" />
+            Full recipe
+          </span>
+          <p>
+            The rest of the ingredients and every step, ready to cook from, in
+            the app.
+          </p>
+          <a
+            href={PLAY_STORE_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn btn-primary body-veil-btn"
+          >
+            <Smartphone size={16} strokeWidth={2.2} aria-hidden="true" />
+            Open in Plateful
+          </a>
+        </div>
         <section>
           <h4>Ingredients</h4>
           <ul className="ing">
@@ -373,6 +395,28 @@ export function ConvertResult({
           ))}
         </motion.div>
       )}
+
+      <motion.div
+        className="recipe-bar"
+        initial={still ? { opacity: 0 } : { y: 90 }}
+        animate={still ? { opacity: 1 } : { y: 0 }}
+        transition={{ duration: 0.7, delay: 1.1, ease: EASE }}
+      >
+        <p>
+          <strong>{recipe.title ?? "Your adapted recipe"}</strong>
+          <span>
+            Cook it, save it, and convert every recipe after this one.
+          </span>
+        </p>
+        <a
+          href={PLAY_STORE_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="btn btn-primary on-dark recipe-bar-btn"
+        >
+          Get Plateful free
+        </a>
+      </motion.div>
     </motion.article>
   );
 }
