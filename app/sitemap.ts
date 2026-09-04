@@ -1,28 +1,30 @@
 import type { MetadataRoute } from "next";
 
+import { SITE_URL } from "@/lib/site";
+
 export default function sitemap(): MetadataRoute.Sitemap {
   const lastModified = new Date();
   return [
     {
-      url: "https://plateful.app",
+      url: SITE_URL,
       lastModified,
       changeFrequency: "monthly",
       priority: 1,
     },
     {
-      url: "https://plateful.app/convert",
+      url: `${SITE_URL}/convert`,
       lastModified,
       changeFrequency: "monthly",
       priority: 0.8,
     },
     {
-      url: "https://plateful.app/privacy",
+      url: `${SITE_URL}/privacy`,
       lastModified,
       changeFrequency: "yearly",
       priority: 0.3,
     },
     {
-      url: "https://plateful.app/terms",
+      url: `${SITE_URL}/terms`,
       lastModified,
       changeFrequency: "yearly",
       priority: 0.3,
