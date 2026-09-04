@@ -12,6 +12,13 @@ export class ConversionTimeoutError extends Error {}
 
 export type Ingredient = { name: string; amount?: number; unit?: string };
 
+export type Nutrition = {
+  calories?: number;
+  protein?: number;
+  carbs?: number;
+  fat?: number;
+};
+
 export type Recipe = {
   title?: string;
   description?: string;
@@ -21,6 +28,8 @@ export type Recipe = {
   servings?: number;
   cook_time_minutes?: number;
   tags?: string[];
+  /** The source recipe's own figures, when the page published them. */
+  nutrition?: Nutrition | null;
 };
 
 export type Swap = {

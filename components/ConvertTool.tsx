@@ -2,16 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import {
-  ArrowRight,
-  BookmarkPlus,
-  Link2,
-  Loader2,
-  Lock,
-  LogOut,
-  Sparkles,
-  TriangleAlert,
-} from "lucide-react";
+import { ArrowRight, Link2, Loader2, LogOut, TriangleAlert } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   createUserWithEmailAndPassword,
@@ -23,8 +14,11 @@ import {
 } from "firebase/auth";
 
 import { auth, googleProvider } from "@/lib/firebase";
-import { PLAY_STORE_URL } from "@/lib/site";
 import { StoreButtons } from "@/components/StoreButtons";
+import {
+  ConvertResult,
+  type ConvertResponse,
+} from "@/components/ConvertResult";
 import { ConvertProgress, type ProgressPhase } from "@/components/ConvertProgress";
 import { RecipeLinkCard, type LinkPreview } from "@/components/RecipeLinkCard";
 import { GoogleIcon } from "@/components/icons";
@@ -39,25 +33,6 @@ const DIETS = [
   "Halal",
 ];
 
-type Ingredient = { name?: string; amount?: number; unit?: string };
-type Recipe = {
-  title?: string;
-  description?: string;
-  ingredients?: Ingredient[];
-  steps?: string[];
-};
-type Swap = {
-  original: string;
-  replacement: string;
-  reason?: string;
-};
-type ConvertResponse = {
-  tailored: Recipe;
-  changes: Swap[];
-  assessment: string | null;
-  warnings: string[];
-  diet: string;
-};
 type Teaser = {
   title: string | null;
   changeCount: number;
@@ -94,15 +69,6 @@ function authMessage(code: string): string {
 /** Loose enough to fire while typing, strict enough not to fetch nonsense. */
 function looksLikeUrl(value: string): boolean {
   return /^https?:\/\/[^\s.]+\.[^\s]{2,}$/i.test(value);
-}
-
-function formatAmount(item: Ingredient): string {
-  const amount =
-    typeof item.amount === "number" && Number.isFinite(item.amount)
-      ? // trim 1.0 to 1, keep 0.5
-        String(Number(item.amount.toFixed(2))).replace(/\.00$/, "")
-      : "";
-  return [amount, item.unit].filter(Boolean).join(" ").trim();
 }
 
 const wait = (ms: number) => new Promise((done) => setTimeout(done, ms));
@@ -469,121 +435,8 @@ export function ConvertTool() {
       )}
 
       <AnimatePresence>
-        {result && (
-          <motion.div
-            className="convert-result"
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, ease: [0.21, 0.65, 0.36, 1] }}
-          >
-            <span className="convert-badge">
-              <Sparkles size={14} aria-hidden="true" />
-              Converted for {result.diet === "None" ? "you" : result.diet}
-            </span>
-            <h3 className="convert-title">
-              {result.tailored.title ?? "Your converted recipe"}
-            </h3>
-            {result.assessment && (
-              <p className="convert-assessment">{result.assessment}</p>
-            )}
-
-            <div className="convert-save">
-              <a
-                href={PLAY_STORE_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn btn-primary convert-save-btn"
-              >
-                <BookmarkPlus size={17} strokeWidth={2.2} aria-hidden="true" />
-                Save to my account
-              </a>
-              <span className="convert-save-note">
-                Keeps it in your Plateful kitchen, on every device.
-              </span>
-            </div>
-
-            {result.changes.length > 0 && (
-              <div className="convert-swaps">
-                <h4>What changed</h4>
-                <ul>
-                  {result.changes.map((swap, i) => (
-                    <li key={`${swap.original}-${i}`}>
-                      <span className="swap-line">
-                        <s>{swap.original}</s>
-                        <ArrowRight size={13} aria-hidden="true" />
-                        <b>{swap.replacement}</b>
-                      </span>
-                      {swap.reason && <span className="swap-why">{swap.reason}</span>}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
-            <div className="convert-cols">
-              <div>
-                <h4>Ingredients</h4>
-                <ul className="convert-list">
-                  {(result.tailored.ingredients ?? []).map((item, i) => (
-                    <li key={`${item.name}-${i}`}>
-                      <span className="qty">{formatAmount(item)}</span>
-                      {item.name}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div>
-                <h4>Steps</h4>
-                <ol className="convert-steps">
-                  {(result.tailored.steps ?? []).map((step, i) => (
-                    <li key={i}>{step}</li>
-                  ))}
-                </ol>
-              </div>
-            </div>
-
-            {result.warnings.length > 0 && (
-              <div className="convert-warnings">
-                {result.warnings.map((warning, i) => (
-                  <p key={i}>
-                    <TriangleAlert size={15} aria-hidden="true" />
-                    {warning}
-                  </p>
-                ))}
-              </div>
-            )}
-          </motion.div>
-        )}
+        {result && <ConvertResult result={result} preview={preview} />}
       </AnimatePresence>
-
-      {result && (
-        <motion.div
-          className="convert-nutrition"
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.1, ease: [0.21, 0.65, 0.36, 1] }}
-        >
-          <div className="nutri-tiles" aria-hidden="true">
-            {["Calories", "Protein", "Carbs", "Fat"].map((label) => (
-              <div className="nutri-tile" key={label}>
-                <span className="nutri-label">{label}</span>
-                <span className="nutri-blur" />
-              </div>
-            ))}
-            <span className="nutri-lock">
-              <Lock size={18} strokeWidth={2.2} />
-            </span>
-          </div>
-
-          <h4>Want to see the changed nutritional values?</h4>
-          <p>
-            Plateful shows what every swap did to the calories, protein, carbs
-            and fat, side by side with the original. That was your free
-            conversion, and the app does this for every recipe you save.
-          </p>
-          <StoreButtons center onDark />
-        </motion.div>
-      )}
 
       <AnimatePresence>
         {showAuth && (
