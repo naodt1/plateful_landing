@@ -13,14 +13,19 @@ export function SiteNav() {
         </span>
         <span className="brand-name">Plateful</span>
       </Link>
-      <a
-        href={PLAY_STORE_URL}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="btn btn-primary"
-      >
-        Get the app
-      </a>
+      <div className="nav-actions">
+        <Link href="/convert" className="nav-link">
+          Convert a recipe
+        </Link>
+        <a
+          href={PLAY_STORE_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="btn btn-primary"
+        >
+          Get the app
+        </a>
+      </div>
     </nav>
   );
 }

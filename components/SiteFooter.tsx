@@ -30,6 +30,9 @@ export function SiteFooter() {
               </a>
             </li>
             <li>
+              <Link href="/convert">Convert a recipe</Link>
+            </li>
+            <li>
               <Link href="/#import-title">How it works</Link>
             </li>
           </ul>

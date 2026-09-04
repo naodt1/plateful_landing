@@ -107,6 +107,24 @@ img {
   padding-bottom: 24px;
 }
 
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+.nav-link {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.nav-link:hover {
+  color: var(--green);
+}
+
 .brand {
   display: flex;
   align-items: center;
@@ -1185,6 +1203,10 @@ img {
     --gutter: 22px;
   }
 
+  .nav-actions {
+    gap: 14px;
+  }
+
   .nav {
     position: sticky;
     top: 0;
@@ -1282,6 +1304,28 @@ img {
     justify-content: center;
     text-align: center;
   }
+
+  .convert-form {
+    grid-template-columns: 1fr;
+    padding: 18px;
+  }
+
+  .convert-result {
+    padding: 24px 20px;
+  }
+
+  .convert-cols {
+    grid-template-columns: 1fr;
+    gap: 26px;
+  }
+}
+
+/* The nav text link is the first thing to go when space runs out; the tool is
+   still reachable from the footer and the homepage. */
+@media (max-width: 560px) {
+  .nav-link {
+    display: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1298,6 +1342,418 @@ img {
   *::after {
     transition-duration: 0.01ms !important;
   }
+}
+
+/* ---------- Convert tool page ---------- */
+.convert-page {
+  padding-top: 56px;
+  padding-bottom: 96px;
+}
+
+.convert-head {
+  max-width: 680px;
+  margin: 0 auto 40px;
+  text-align: center;
+}
+
+.convert-head h1 {
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: clamp(34px, 4.6vw, 50px);
+  font-weight: 500;
+  letter-spacing: -0.025em;
+  line-height: 1.08;
+  margin: 0 0 16px;
+  text-wrap: balance;
+}
+
+.convert-head h1 .accent {
+  font-style: italic;
+  color: var(--green);
+}
+
+.convert-sub {
+  font-size: 17.5px;
+  line-height: 1.6;
+  color: var(--muted);
+  margin: 0;
+  text-wrap: pretty;
+}
+
+.convert {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.convert-form {
+  display: grid;
+  grid-template-columns: 1fr 190px;
+  gap: 14px;
+  align-items: end;
+  background: var(--cream-card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 22px;
+  box-shadow: var(--shadow-card);
+}
+
+.convert-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.convert-label {
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted-light);
+}
+
+.convert-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fff;
+  border: 1px solid var(--border-strong);
+  border-radius: 12px;
+  padding: 0 14px;
+  color: var(--muted-light);
+}
+
+.convert-input-wrap:focus-within {
+  outline: 2px solid var(--green);
+  outline-offset: 1px;
+  border-color: transparent;
+}
+
+.convert-input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: none;
+  font-family: inherit;
+  font-size: 15px;
+  color: var(--ink);
+  padding: 14px 0;
+}
+
+.convert-input::placeholder {
+  color: #b3ada2;
+}
+
+.convert-select {
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+  background: #fff;
+  border: 1px solid var(--border-strong);
+  border-radius: 12px;
+  padding: 14px 12px;
+  cursor: pointer;
+}
+
+.convert-select:focus {
+  outline: 2px solid var(--green);
+  outline-offset: 1px;
+  border-color: transparent;
+}
+
+.convert-submit {
+  grid-column: 1 / -1;
+  width: 100%;
+  min-width: 0;
+}
+
+.convert-submit:disabled {
+  opacity: 0.65;
+  cursor: default;
+  transform: none;
+}
+
+.spin {
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.convert-note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  font-size: 13.5px;
+  color: var(--muted-light);
+  margin: 16px 0 0;
+  text-align: center;
+}
+
+.convert-linkbtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: var(--green);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.convert-linkbtn:hover {
+  text-decoration: underline;
+}
+
+.convert-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+  margin: 20px 0 0;
+  padding: 14px 18px;
+  border-radius: 12px;
+  background: #fdf3f1;
+  border: 1px solid #f0d6d0;
+  color: #8c3524;
+  font-size: 14.5px;
+  font-weight: 500;
+}
+
+/* result */
+.convert-result {
+  margin-top: 28px;
+  background: var(--cream-card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 30px;
+  box-shadow: var(--shadow-card);
+}
+
+.convert-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--green-mist);
+  color: var(--green);
+  padding: 6px 13px;
+  border-radius: 999px;
+  font-size: 12.5px;
+  font-weight: 600;
+  margin-bottom: 14px;
+}
+
+.convert-title {
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 27px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.18;
+  margin: 0 0 10px;
+}
+
+.convert-assessment {
+  font-size: 15.5px;
+  line-height: 1.6;
+  color: var(--muted);
+  margin: 0 0 24px;
+  text-wrap: pretty;
+}
+
+.convert-result h4 {
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted-light);
+  margin: 0 0 12px;
+}
+
+.convert-swaps {
+  border-top: 1px solid var(--border);
+  padding-top: 22px;
+  margin-bottom: 26px;
+}
+
+.convert-swaps ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.convert-swaps li {
+  background: var(--green-mist-soft);
+  border: 1px solid var(--border-green);
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+
+.swap-line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 15px;
+  color: var(--ink);
+}
+
+.swap-line s {
+  color: var(--muted-light);
+}
+
+.swap-line b {
+  color: var(--green);
+}
+
+.swap-why {
+  display: block;
+  margin-top: 4px;
+  font-size: 13.5px;
+  color: var(--muted);
+}
+
+.convert-cols {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  gap: 32px;
+  border-top: 1px solid var(--border);
+  padding-top: 22px;
+}
+
+.convert-list,
+.convert-steps {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.convert-list {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.convert-list .qty {
+  color: var(--green);
+  font-weight: 600;
+  margin-right: 6px;
+}
+
+.convert-steps {
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+
+.convert-warnings {
+  margin-top: 24px;
+  border-top: 1px solid var(--border);
+  padding-top: 20px;
+}
+
+.convert-warnings p {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin: 0 0 8px;
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+
+/* dark call-to-action blocks after a result, or when the free one is spent */
+.convert-after,
+.convert-used {
+  margin-top: 30px;
+  background: var(--green-deep);
+  border-radius: 18px;
+  padding: 30px 26px;
+  text-align: center;
+  color: #f4f0e8;
+}
+
+.convert-used {
+  margin-top: 24px;
+}
+
+.convert-after h4,
+.convert-used h3 {
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 23px;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  text-transform: none;
+  color: #f4f0e8;
+  margin: 0 0 10px;
+}
+
+.convert-after p,
+.convert-used p {
+  font-size: 15.5px;
+  line-height: 1.6;
+  color: var(--green-fog);
+  margin: 0 auto 22px;
+  max-width: 420px;
+  text-wrap: pretty;
+}
+
+/* auth modal extras */
+.auth-or {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 18px 0;
+  color: var(--muted-light);
+  font-size: 12.5px;
+}
+
+.auth-or::before,
+.auth-or::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.auth-google {
+  width: 100%;
+  justify-content: center;
+}
+
+.auth-switch {
+  margin: 18px 0 0;
+  text-align: center;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.auth-switch button {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  font-weight: 600;
+  color: var(--green);
+  cursor: pointer;
+}
+
+.auth-switch button:hover {
+  text-decoration: underline;
 }
 
 /* ---------- Legal pages ---------- */

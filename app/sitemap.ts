@@ -10,6 +10,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1,
     },
     {
+      url: "https://plateful.app/convert",
+      lastModified,
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
       url: "https://plateful.app/privacy",
       lastModified,
       changeFrequency: "yearly",
