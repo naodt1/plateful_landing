@@ -13,6 +13,17 @@ export const metadata: Metadata = {
     title: "Convert Any Recipe To Your Diet | Plateful",
     description:
       "Paste any recipe link and Plateful rewrites it to fit your diet. One free conversion.",
+    // Declaring openGraph here replaces the root object wholesale, which drops
+    // the shared opengraph-image file with it. Naming it keeps this page's
+    // card from going out with no image at all.
+    images: [
+      {
+        url: "/opengraph-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Any recipe, your diet. Recipes from TikTok, YouTube, Instagram and the web flow into Plateful and come out adapted to a vegan, high protein, nut free diet.",
+      },
+    ],
   },
 };
 
