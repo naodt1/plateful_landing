@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { SiteNav } from "@/components/SiteNav";
 import { SiteFooter } from "@/components/SiteFooter";
 import { ConvertTool } from "@/components/ConvertTool";
+import { PlatformNote } from "@/components/PlatformNote";
 
 export const metadata: Metadata = {
   title: "Convert Any Recipe To Your Diet",
@@ -46,6 +47,8 @@ export default function ConvertPage() {
         </header>
 
         <ConvertTool />
+
+        <PlatformNote />
       </main>
 
       <SiteFooter />

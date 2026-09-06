@@ -2710,6 +2710,101 @@ body:has(.recipe-bar) {
   width: 100%;
 }
 
+/* ---------- Compact platform note ---------- */
+.platnote {
+  max-width: 760px;
+  margin: 40px auto 0;
+  background: var(--cream-card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 6px 20px;
+  box-shadow: var(--shadow-card);
+}
+
+.platnote-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 0;
+}
+
+.platnote-row + .platnote-row {
+  border-top: 1px solid var(--border);
+}
+
+.platnote-icon {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
+  background: #fff;
+  border: 1px solid var(--border);
+  color: var(--ink);
+}
+
+.platnote-row p {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin: 0;
+  margin-right: auto;
+  min-width: 0;
+}
+
+.platnote-row strong {
+  font-size: 15.2px;
+  font-weight: 650;
+  color: var(--ink);
+}
+
+.platnote-row span {
+  font-size: 13.4px;
+  color: var(--muted-light);
+}
+
+.platnote-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: var(--green) !important;
+  font-weight: 600;
+}
+
+.platnote-btn {
+  flex: 0 0 auto;
+  font-family: inherit;
+  font-size: 14.2px;
+  font-weight: 650;
+  color: #fff;
+  background: var(--dark);
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 10px 20px;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+
+.platnote-btn:hover {
+  background: #000;
+}
+
+.platnote-btn.is-ghost {
+  background: transparent;
+  color: var(--muted);
+  border-color: var(--border-strong);
+}
+
+.platnote-btn.is-ghost:hover {
+  color: var(--ink);
+  border-color: var(--muted-light);
+  background: #fff;
+}
+
 /* ---------- Shared remix page ---------- */
 .remix-page {
   padding-top: 44px;
@@ -2878,6 +2973,20 @@ body:has(.recipe-bar) {
   }
   .plat-grid {
     grid-template-columns: 1fr;
+  }
+
+  .platnote {
+    padding: 4px 16px;
+  }
+
+  .platnote-row {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .platnote-btn {
+    width: 100%;
+    text-align: center;
   }
 
   .share {
