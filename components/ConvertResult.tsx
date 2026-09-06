@@ -6,12 +6,15 @@ import {
   Lock,
   RefreshCw,
   BookmarkPlus,
+  Check,
+  Link2,
   Smartphone,
   Sparkles,
   TriangleAlert,
   UtensilsCrossed,
   Users,
 } from "lucide-react";
+import { useState } from "react";
 import { motion, useReducedMotion, type Variants } from "framer-motion";
 
 import { PLAY_STORE_URL } from "@/lib/site";
@@ -44,6 +47,8 @@ export type ConvertResponse = {
   assessment: string | null;
   warnings: string[];
   diet: string;
+  /** Set once the conversion has been published at its own share URL. */
+  remixId?: string | null;
 };
 
 /**
@@ -71,11 +76,21 @@ const MACROS: { key: keyof Nutrition; label: string; unit: string }[] = [
 export function ConvertResult({
   result,
   preview,
+  variant = "owner",
 }: {
   result: ConvertResponse;
   preview: LinkPreview | null;
+  /**
+   * "owner" is the person who just converted it. "shared" is whoever they sent
+   * the link to, who has not spent their free remix yet and is the whole
+   * reason these pages exist.
+   */
+  variant?: "owner" | "shared";
 }) {
   const still = useReducedMotion();
+  const [copied, setCopied] = useState(false);
+  const shared = variant === "shared";
+  const dietWord = result.diet === "None" ? "adapted" : result.diet.toLowerCase();
 
   const container: Variants = {
     hidden: {},
@@ -231,24 +246,55 @@ export function ConvertResult({
           rel="noopener noreferrer"
           className="btn btn-primary recipe-action"
         >
-          <BookmarkPlus size={17} strokeWidth={2.2} aria-hidden="true" />
-          Save adapted recipe
+          {shared ? (
+            <Smartphone size={17} strokeWidth={2.2} aria-hidden="true" />
+          ) : (
+            <BookmarkPlus size={17} strokeWidth={2.2} aria-hidden="true" />
+          )}
+          {shared ? "Get Plateful free" : "Save adapted recipe"}
         </a>
         <a
-          href={PLAY_STORE_URL}
-          target="_blank"
-          rel="noopener noreferrer"
+          href={shared ? "/convert" : PLAY_STORE_URL}
+          {...(shared ? {} : { target: "_blank", rel: "noopener noreferrer" })}
           className="btn btn-ghost recipe-action"
         >
           <RefreshCw size={16} strokeWidth={2.2} aria-hidden="true" />
-          Convert new recipe
+          {shared ? "Remix your own recipe" : "Convert new recipe"}
         </a>
       </motion.div>
 
       <motion.p className="recipe-actions-note" variants={rise}>
-        That was your one free conversion. Plateful converts every recipe you
-        save, and keeps them all in one place.
+        {shared
+          ? "Your first remix is free. No card, no app needed to try it."
+          : "That was your one free conversion. Plateful converts every recipe you save, and keeps them all in one place."}
       </motion.p>
+
+      {!shared && result.remixId && (
+        <motion.div className="share" variants={rise}>
+          <div className="share-text">
+            <h4>Share this remix</h4>
+            <p>Anyone with the link sees the {dietWord} version you just made.</p>
+          </div>
+          <button
+            type="button"
+            className={copied ? "share-btn is-copied" : "share-btn"}
+            onClick={() => {
+              const url = `${window.location.origin}/r/${result.remixId}`;
+              void navigator.clipboard?.writeText(url).then(() => {
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2200);
+              });
+            }}
+          >
+            {copied ? (
+              <Check size={15} strokeWidth={2.6} aria-hidden="true" />
+            ) : (
+              <Link2 size={15} strokeWidth={2.2} aria-hidden="true" />
+            )}
+            {copied ? "Link copied" : "Copy link"}
+          </button>
+        </motion.div>
+      )}
 
       {result.changes.length > 0 && (
         <motion.section className="swaps" variants={rise}>
@@ -337,8 +383,9 @@ export function ConvertResult({
             Full recipe
           </span>
           <p>
-            The rest of the ingredients and every step, ready to cook from, in
-            the app.
+            {shared
+              ? `The rest of the ingredients and every step of the ${dietWord} version, in the app.`
+              : "The rest of the ingredients and every step, ready to cook from, in the app."}
           </p>
           <a
             href={PLAY_STORE_URL}
@@ -403,9 +450,15 @@ export function ConvertResult({
         transition={{ duration: 0.7, delay: 1.1, ease: EASE }}
       >
         <p>
-          <strong>{recipe.title ?? "Your adapted recipe"}</strong>
+          <strong>
+            {shared
+              ? `Curious what the ${dietWord} version looks like?`
+              : (recipe.title ?? "Your adapted recipe")}
+          </strong>
           <span>
-            Cook it, save it, and convert every recipe after this one.
+            {shared
+              ? "Get the app and remix any recipe you save."
+              : "Cook it, save it, and convert every recipe after this one."}
           </span>
         </p>
         <a

@@ -9,6 +9,7 @@ import {
 import { claimFreeConversion, hasUsedFreeConversion } from "@/lib/free-conversion";
 import { verifyIdToken } from "@/lib/verify-token";
 import { seal } from "@/lib/envelope";
+import { createRemix } from "@/lib/remix";
 import { UNLIMITED_CONVERSIONS, type SealedResult } from "@/lib/conversion";
 
 export const runtime = "nodejs";
@@ -147,7 +148,14 @@ export async function POST(request: Request) {
       if (!UNLIMITED_CONVERSIONS) {
         await claimFreeConversion(user.uid, idToken, url, diet);
       }
-      return NextResponse.json({ revealed: true, result });
+      const remixId = await createRemix(idToken, user.uid, {
+        diet,
+        title: recipe.title ?? "Adapted recipe",
+        host: new URL(url).hostname.replace(/^www\./, ""),
+        image: recipe.image_url ?? null,
+        payload: result,
+      });
+      return NextResponse.json({ revealed: true, result: { ...result, remixId } });
     }
 
     return NextResponse.json({
