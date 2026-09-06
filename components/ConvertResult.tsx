@@ -277,8 +277,9 @@ export function ConvertResult({
           reaches the end of the funnel and finds nothing it can install. */}
       <motion.p className="recipe-ios" variants={rise}>
         <button type="button" onClick={() => setWaitlist(true)} aria-haspopup="dialog">
-          <AppleIcon size={13} fill="currentColor" />
-          On iPhone? Plateful is Android only for now. Join the waitlist.
+          <AppleIcon size={14} fill="currentColor" />
+          <span>On iPhone? Plateful is Android only for now.</span>
+          <span className="recipe-ios-cta">Join the waitlist</span>
         </button>
       </motion.p>
 
