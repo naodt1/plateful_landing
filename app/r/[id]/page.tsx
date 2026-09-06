@@ -72,15 +72,24 @@ export default async function RemixPage({ params }: Params) {
       <SiteNav />
 
       <main className="container remix-page">
+        {/* Not "curious what the vegetarian version looks like?": they are
+            looking at it. The question only works where the answer is still
+            unknown, which is the share card and the call to action. */}
         <header className="remix-head">
           <p className="eyebrow">Remixed with Plateful</p>
           <h1>
-            Curious what the <span className="accent">{word}</span> version
-            looks like?
+            {remix.title},{" "}
+            {remix.diet === "None" ? (
+              <span className="accent">remixed</span>
+            ) : (
+              <>
+                made <span className="accent">{word}</span>
+              </>
+            )}
+            .
           </h1>
           <p className="remix-sub">
-            Someone ran {remix.title} through Plateful. Here is what changed,
-            and why.
+            Someone ran it through Plateful. Here is what changed, and why.
           </p>
         </header>
 

@@ -452,12 +452,14 @@ export function ConvertResult({
         <p>
           <strong>
             {shared
-              ? `Curious what the ${dietWord} version looks like?`
+              ? result.diet === "None"
+                ? "Curious what your own recipes could look like?"
+                : `Curious what your recipes look like ${dietWord}?`
               : (recipe.title ?? "Your adapted recipe")}
           </strong>
           <span>
             {shared
-              ? "Get the app and remix any recipe you save."
+              ? "Remix any recipe you save. The first one is free."
               : "Cook it, save it, and convert every recipe after this one."}
           </span>
         </p>
