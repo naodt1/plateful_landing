@@ -2785,105 +2785,39 @@ body:has(.recipe-bar) {
 }
 
 /* ---------- Share this remix ---------- */
-/* Given its own card rather than a link under the small print: a share is the
-   cheapest install this page can produce, so it should look like an action. */
 .share {
-  position: relative;
-  margin-top: 20px;
-  padding: 22px 24px;
-  background: var(--green-mist-soft);
-  border: 1px solid var(--border-green);
-  border-radius: 18px;
-}
-
-.share-icon {
-  position: absolute;
-  top: 22px;
-  right: 24px;
   display: flex;
-  align-items: center;
   justify-content: center;
-  width: 38px;
-  height: 38px;
-  border-radius: 11px;
-  background: var(--green-mist);
-  color: var(--green);
-}
-
-.share-text h4 {
-  margin: 0 0 5px;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--ink);
-}
-
-.share-text p {
-  margin: 0 0 16px;
-  padding-right: 48px;
-  font-size: 14.2px;
-  line-height: 1.55;
-  color: var(--muted);
-  text-wrap: pretty;
-}
-
-.share-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.share-url {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex: 1;
-  min-width: 0;
-  background: #fff;
-  border: 1px solid var(--border-green);
-  border-radius: 999px;
-  padding: 0 16px;
-  color: var(--muted-light);
-}
-
-.share-url input {
-  flex: 1;
-  min-width: 0;
-  border: none;
-  outline: none;
-  background: none;
-  font-family: inherit;
-  font-size: 14px;
-  color: var(--muted);
-  padding: 12px 0;
-  text-overflow: ellipsis;
+  margin-top: 16px;
 }
 
 .share-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  flex: 0 0 auto;
+  gap: 9px;
   font-family: inherit;
-  font-size: 15px;
+  font-size: 15.5px;
   font-weight: 650;
   color: #fff;
   background: var(--green);
   border: none;
   border-radius: 999px;
-  padding: 13px 26px;
+  padding: 14px 30px;
   cursor: pointer;
-  transition: background 0.18s ease;
+  box-shadow: 0 1px 2px rgba(20, 60, 40, 0.16),
+    0 12px 24px -14px rgba(20, 60, 40, 0.6);
+  transition: background 0.18s ease, transform 0.18s ease;
 }
 
 .share-btn:hover {
   background: var(--green-hover);
+  transform: translateY(-1px);
 }
 
 .share-btn.is-copied {
   background: var(--green-deep);
+  transform: none;
 }
 
 /* The convert page and the adapted recipe are defined below the main
@@ -2954,17 +2888,12 @@ body:has(.recipe-bar) {
   }
 
 
-  .share-row {
-    flex-direction: column;
-    align-items: stretch;
+  .share {
+    align-self: stretch;
   }
 
   .share-btn {
     width: 100%;
-  }
-
-  .share-text p {
-    padding-right: 44px;
   }
 
   .recipe-bar p {

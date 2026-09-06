@@ -7,7 +7,6 @@ import {
   RefreshCw,
   BookmarkPlus,
   Check,
-  Link2,
   Share2,
   Smartphone,
   Sparkles,
@@ -284,66 +283,44 @@ export function ConvertResult({
       </motion.p>
 
       {!shared && result.remixId && (
-        <motion.section className="share" variants={rise}>
-          <span className="share-icon" aria-hidden="true">
-            <Share2 size={19} strokeWidth={2.1} />
-          </span>
-          <div className="share-text">
-            <h4>Share this remix</h4>
-            <p>
-              It has its own page. Anyone you send it to sees the {dietWord}{" "}
-              version you just made.
-            </p>
-          </div>
-
-          <div className="share-row">
-            <span className="share-url">
-              <Link2 size={14} strokeWidth={2.2} aria-hidden="true" />
-              <input
-                readOnly
-                value={shareUrl}
-                aria-label="Link to this remix"
-                onFocus={(e) => e.currentTarget.select()}
-              />
-            </span>
-            <button
-              type="button"
-              className={copied ? "share-btn is-copied" : "share-btn"}
-              onClick={async () => {
-                if (!shareUrl) return;
-                // The share sheet is the point on a phone: it opens straight
-                // into the conversation someone was going to paste it in.
-                if (navigator.share) {
-                  try {
-                    await navigator.share({
-                      title: recipe.title ?? "A recipe, remixed",
-                      text: `The ${dietWord} version of ${recipe.title ?? "this recipe"}`,
-                      url: shareUrl,
-                    });
-                    return;
-                  } catch (error) {
-                    // Dismissing the sheet is not a failure to fall back from.
-                    if ((error as Error)?.name === "AbortError") return;
-                  }
-                }
+        <motion.div className="share" variants={rise}>
+          <button
+            type="button"
+            className={copied ? "share-btn is-copied" : "share-btn"}
+            onClick={async () => {
+              if (!shareUrl) return;
+              // The share sheet is the point on a phone: it opens straight
+              // into the conversation someone was going to paste it in.
+              if (navigator.share) {
                 try {
-                  await navigator.clipboard.writeText(shareUrl);
-                  setCopied(true);
-                  setTimeout(() => setCopied(false), 2400);
-                } catch {
-                  /* the field is selectable, so there is still a way through */
+                  await navigator.share({
+                    title: recipe.title ?? "A recipe, remixed",
+                    text: `The ${dietWord} version of ${recipe.title ?? "this recipe"}`,
+                    url: shareUrl,
+                  });
+                  return;
+                } catch (error) {
+                  // Dismissing the sheet is a decision, not a failure.
+                  if ((error as Error)?.name === "AbortError") return;
                 }
-              }}
-            >
-              {copied ? (
-                <Check size={16} strokeWidth={2.8} aria-hidden="true" />
-              ) : (
-                <Share2 size={16} strokeWidth={2.3} aria-hidden="true" />
-              )}
-              {copied ? "Link copied" : "Share"}
-            </button>
-          </div>
-        </motion.section>
+              }
+              try {
+                await navigator.clipboard.writeText(shareUrl);
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2400);
+              } catch {
+                /* nothing useful to do if the clipboard is refused */
+              }
+            }}
+          >
+            {copied ? (
+              <Check size={17} strokeWidth={2.8} aria-hidden="true" />
+            ) : (
+              <Share2 size={17} strokeWidth={2.3} aria-hidden="true" />
+            )}
+            {copied ? "Link copied" : "Share this remix"}
+          </button>
+        </motion.div>
       )}
 
       {/* Every button above goes to Google Play, so without this an iPhone
