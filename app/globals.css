@@ -2434,11 +2434,28 @@ body:has(.recipe-bar) {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 22px;
-  flex-wrap: wrap;
-  padding: 13px 24px calc(13px + env(safe-area-inset-bottom));
+  gap: 16px;
+  /* The bar stays full bleed; the padding is what holds its contents to the
+     page's column on a wide screen, so the button never drifts off to the far
+     edge away from the text it belongs to. */
+  padding: 13px max(24px, calc((100vw - 1120px) / 2))
+    calc(13px + env(safe-area-inset-bottom));
   background: var(--green-deep);
   box-shadow: 0 -12px 34px -14px rgba(20, 40, 26, 0.55);
+}
+
+.recipe-bar-mark {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
+  overflow: hidden;
+  display: flex;
+  box-shadow: 0 2px 10px -3px rgba(0, 0, 0, 0.5);
+}
+
+.recipe-bar-mark img {
+  display: block;
 }
 
 .recipe-bar p {
@@ -2447,6 +2464,8 @@ body:has(.recipe-bar) {
   gap: 2px;
   margin: 0;
   min-width: 0;
+  /* Sits with the icon rather than centring apart from it. */
+  margin-right: auto;
 }
 
 .recipe-bar strong {
@@ -2716,8 +2735,36 @@ body:has(.recipe-bar) {
     padding-left: 16px;
     padding-right: 16px;
   }
-  .recipe-bar span {
+  /* Scoped to the sentence inside the paragraph: bare "span" also matched the
+     app icon sitting next to it, and hid the thing entirely. */
+  .recipe-bar p span {
     display: none;
+  }
+
+  .recipe-bar-mark {
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+  }
+
+  .recipe-bar-mark img {
+    width: 34px;
+    height: 34px;
+  }
+
+  /* Two lines beats an ellipsis after three words. */
+  .recipe-bar strong {
+    white-space: normal;
+    font-size: 13.6px;
+    line-height: 1.28;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  .recipe-bar-btn {
+    padding: 11px 18px;
+    font-size: 14.5px;
   }
   .share {
     flex-direction: column;

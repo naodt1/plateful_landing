@@ -15,6 +15,7 @@ import {
   Users,
 } from "lucide-react";
 import { useState } from "react";
+import Image from "next/image";
 import { motion, useReducedMotion, type Variants } from "framer-motion";
 
 import { PLAY_STORE_URL } from "@/lib/site";
@@ -449,6 +450,17 @@ export function ConvertResult({
         animate={still ? { opacity: 1 } : { y: 0 }}
         transition={{ duration: 0.7, delay: 1.1, ease: EASE }}
       >
+        <span className="recipe-bar-mark" aria-hidden="true">
+          {/* Always in view, so never lazy. */}
+          <Image
+            src="/play_store_512.png"
+            alt=""
+            width={40}
+            height={40}
+            loading="eager"
+          />
+        </span>
+
         <p>
           <strong>
             {shared
