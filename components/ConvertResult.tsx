@@ -8,13 +8,14 @@ import {
   BookmarkPlus,
   Check,
   Link2,
+  Share2,
   Smartphone,
   Sparkles,
   TriangleAlert,
   UtensilsCrossed,
   Users,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { motion, useReducedMotion, type Variants } from "framer-motion";
 
@@ -93,6 +94,9 @@ export function ConvertResult({
   const still = useReducedMotion();
   const [copied, setCopied] = useState(false);
   const [waitlist, setWaitlist] = useState(false);
+  // Built in the browser, because the origin is not known while rendering on
+  // the server and a guess would end up in someone's message thread.
+  const [shareUrl, setShareUrl] = useState("");
   const shared = variant === "shared";
   const dietWord = result.diet === "None" ? "adapted" : result.diet.toLowerCase();
 
@@ -120,6 +124,12 @@ export function ConvertResult({
           transition: { duration: 0.8, ease: EASE },
         },
   };
+
+  useEffect(() => {
+    if (result.remixId) {
+      setShareUrl(`${window.location.origin}/r/${result.remixId}`);
+    }
+  }, [result.remixId]);
 
   const recipe = result.tailored;
   const source = result.original;
@@ -273,6 +283,69 @@ export function ConvertResult({
           : "That was your one free conversion. Plateful converts every recipe you save, and keeps them all in one place."}
       </motion.p>
 
+      {!shared && result.remixId && (
+        <motion.section className="share" variants={rise}>
+          <span className="share-icon" aria-hidden="true">
+            <Share2 size={19} strokeWidth={2.1} />
+          </span>
+          <div className="share-text">
+            <h4>Share this remix</h4>
+            <p>
+              It has its own page. Anyone you send it to sees the {dietWord}{" "}
+              version you just made.
+            </p>
+          </div>
+
+          <div className="share-row">
+            <span className="share-url">
+              <Link2 size={14} strokeWidth={2.2} aria-hidden="true" />
+              <input
+                readOnly
+                value={shareUrl}
+                aria-label="Link to this remix"
+                onFocus={(e) => e.currentTarget.select()}
+              />
+            </span>
+            <button
+              type="button"
+              className={copied ? "share-btn is-copied" : "share-btn"}
+              onClick={async () => {
+                if (!shareUrl) return;
+                // The share sheet is the point on a phone: it opens straight
+                // into the conversation someone was going to paste it in.
+                if (navigator.share) {
+                  try {
+                    await navigator.share({
+                      title: recipe.title ?? "A recipe, remixed",
+                      text: `The ${dietWord} version of ${recipe.title ?? "this recipe"}`,
+                      url: shareUrl,
+                    });
+                    return;
+                  } catch (error) {
+                    // Dismissing the sheet is not a failure to fall back from.
+                    if ((error as Error)?.name === "AbortError") return;
+                  }
+                }
+                try {
+                  await navigator.clipboard.writeText(shareUrl);
+                  setCopied(true);
+                  setTimeout(() => setCopied(false), 2400);
+                } catch {
+                  /* the field is selectable, so there is still a way through */
+                }
+              }}
+            >
+              {copied ? (
+                <Check size={16} strokeWidth={2.8} aria-hidden="true" />
+              ) : (
+                <Share2 size={16} strokeWidth={2.3} aria-hidden="true" />
+              )}
+              {copied ? "Link copied" : "Share"}
+            </button>
+          </div>
+        </motion.section>
+      )}
+
       {/* Every button above goes to Google Play, so without this an iPhone
           reaches the end of the funnel and finds nothing it can install. */}
       <motion.p className="recipe-ios" variants={rise}>
@@ -284,33 +357,6 @@ export function ConvertResult({
       </motion.p>
 
       <WaitlistModal open={waitlist} onClose={() => setWaitlist(false)} />
-
-      {!shared && result.remixId && (
-        <motion.div className="share" variants={rise}>
-          <div className="share-text">
-            <h4>Share this remix</h4>
-            <p>Anyone with the link sees the {dietWord} version you just made.</p>
-          </div>
-          <button
-            type="button"
-            className={copied ? "share-btn is-copied" : "share-btn"}
-            onClick={() => {
-              const url = `${window.location.origin}/r/${result.remixId}`;
-              void navigator.clipboard?.writeText(url).then(() => {
-                setCopied(true);
-                setTimeout(() => setCopied(false), 2200);
-              });
-            }}
-          >
-            {copied ? (
-              <Check size={15} strokeWidth={2.6} aria-hidden="true" />
-            ) : (
-              <Link2 size={15} strokeWidth={2.2} aria-hidden="true" />
-            )}
-            {copied ? "Link copied" : "Copy link"}
-          </button>
-        </motion.div>
-      )}
 
       {result.changes.length > 0 && (
         <motion.section className="swaps" variants={rise}>
