@@ -2787,37 +2787,78 @@ body:has(.recipe-bar) {
 /* ---------- Share this remix ---------- */
 .share {
   display: flex;
-  justify-content: center;
-  margin-top: 16px;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
 }
 
+/* Appears only when the browser refused to copy, so the press still leaves
+   the reader with something they can act on. */
+.share-manual {
+  width: min(100%, 30rem);
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--muted);
+  text-align: center;
+  background: #fff;
+  border: 1px solid var(--border-green);
+  border-radius: 999px;
+  padding: 10px 16px;
+}
+
+/* Deliberately not another pill in the row above. The icon sits in its own
+   well, the face is lit from the top, and it stands off the page far enough
+   to look like something you press rather than something you read. */
 .share-btn {
+  position: relative;
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 9px;
+  gap: 12px;
+  padding: 9px 28px 9px 9px;
+  border: none;
+  border-radius: 999px;
   font-family: inherit;
   font-size: 15.5px;
   font-weight: 650;
+  letter-spacing: -0.005em;
   color: #fff;
-  background: var(--green);
-  border: none;
-  border-radius: 999px;
-  padding: 14px 30px;
   cursor: pointer;
-  box-shadow: 0 1px 2px rgba(20, 60, 40, 0.16),
-    0 12px 24px -14px rgba(20, 60, 40, 0.6);
-  transition: background 0.18s ease, transform 0.18s ease;
+  background: linear-gradient(
+    180deg,
+    #2c9a6d 0%,
+    var(--green) 52%,
+    #1a6a48 100%
+  );
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    0 2px 4px rgba(16, 60, 40, 0.24), 0 16px 30px -16px rgba(16, 60, 40, 0.8);
 }
 
-.share-btn:hover {
-  background: var(--green-hover);
-  transform: translateY(-1px);
+.share-well {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.share-label {
+  white-space: nowrap;
+}
+
+.share-ring {
+  position: absolute;
+  inset: -2px;
+  border-radius: 999px;
+  border: 2px solid var(--green);
+  pointer-events: none;
 }
 
 .share-btn.is-copied {
-  background: var(--green-deep);
-  transform: none;
+  background: linear-gradient(180deg, #23684d 0%, var(--green-deep) 100%);
 }
 
 /* The convert page and the adapted recipe are defined below the main

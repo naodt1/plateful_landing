@@ -16,7 +16,12 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { motion, useReducedMotion, type Variants } from "framer-motion";
+import {
+  AnimatePresence,
+  motion,
+  useReducedMotion,
+  type Variants,
+} from "framer-motion";
 
 import { PLAY_STORE_URL } from "@/lib/site";
 import { WaitlistModal } from "@/components/WaitlistModal";
@@ -69,6 +74,40 @@ function formatAmount(item: Ingredient): string {
   return [amount, item.unit].filter(Boolean).join(" ").trim();
 }
 
+/**
+ * Puts text on the clipboard, or says it could not.
+ *
+ * The async clipboard API is refused often enough to matter: an insecure
+ * origin, a page that does not have focus, a browser that wants a permission
+ * first. When a press produces nothing at all the button feels broken, so this
+ * falls back to a selection copy, which only needs the click that already
+ * happened.
+ */
+async function copyText(text: string): Promise<boolean> {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch {
+    /* fall through to the older route */
+  }
+
+  try {
+    const field = document.createElement("textarea");
+    field.value = text;
+    field.setAttribute("readonly", "");
+    field.style.position = "fixed";
+    field.style.top = "-1000px";
+    field.style.opacity = "0";
+    document.body.appendChild(field);
+    field.select();
+    const ok = document.execCommand("copy");
+    document.body.removeChild(field);
+    return ok;
+  } catch {
+    return false;
+  }
+}
+
 const MACROS: { key: keyof Nutrition; label: string; unit: string }[] = [
   { key: "calories", label: "Calories", unit: "" },
   { key: "protein", label: "Protein", unit: "g" },
@@ -96,6 +135,12 @@ export function ConvertResult({
   // Built in the browser, because the origin is not known while rendering on
   // the server and a guess would end up in someone's message thread.
   const [shareUrl, setShareUrl] = useState("");
+  // Bumped on every successful copy so the ring replays rather than firing
+  // once and never again.
+  const [pulse, setPulse] = useState(0);
+  // Only ever shown when both copy routes were refused, which is the one case
+  // where the press would otherwise produce nothing at all.
+  const [manual, setManual] = useState(false);
   const shared = variant === "shared";
   const dietWord = result.diet === "None" ? "adapted" : result.diet.toLowerCase();
 
@@ -284,9 +329,12 @@ export function ConvertResult({
 
       {!shared && result.remixId && (
         <motion.div className="share" variants={rise}>
-          <button
+          <motion.button
             type="button"
             className={copied ? "share-btn is-copied" : "share-btn"}
+            whileHover={still ? undefined : { y: -2 }}
+            whileTap={still ? undefined : { scale: 0.96 }}
+            transition={{ type: "spring", stiffness: 520, damping: 30 }}
             onClick={async () => {
               if (!shareUrl) return;
               // The share sheet is the point on a phone: it opens straight
@@ -304,22 +352,65 @@ export function ConvertResult({
                   if ((error as Error)?.name === "AbortError") return;
                 }
               }
-              try {
-                await navigator.clipboard.writeText(shareUrl);
+              if (await copyText(shareUrl)) {
                 setCopied(true);
+                setPulse((n) => n + 1);
                 setTimeout(() => setCopied(false), 2400);
-              } catch {
-                /* nothing useful to do if the clipboard is refused */
+              } else {
+                setManual(true);
               }
             }}
           >
-            {copied ? (
-              <Check size={17} strokeWidth={2.8} aria-hidden="true" />
-            ) : (
-              <Share2 size={17} strokeWidth={2.3} aria-hidden="true" />
-            )}
-            {copied ? "Link copied" : "Share this remix"}
-          </button>
+            {/* A ring leaving the button is the acknowledgement: something
+                went out, which is exactly what just happened. */}
+            <AnimatePresence>
+              {pulse > 0 && (
+                <motion.span
+                  key={pulse}
+                  className="share-ring"
+                  aria-hidden="true"
+                  initial={{ opacity: 0.75, scale: 1 }}
+                  animate={{ opacity: 0, scale: 1.28 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.85, ease: "easeOut" }}
+                />
+              )}
+            </AnimatePresence>
+
+            <span className="share-well">
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.span
+                  key={copied ? "done" : "share"}
+                  initial={still ? false : { scale: 0.4, opacity: 0, rotate: -25 }}
+                  animate={{ scale: 1, opacity: 1, rotate: 0 }}
+                  exit={still ? undefined : { scale: 0.4, opacity: 0 }}
+                  transition={{ type: "spring", stiffness: 620, damping: 26 }}
+                  style={{ display: "flex" }}
+                >
+                  {copied ? (
+                    <Check size={17} strokeWidth={3} aria-hidden="true" />
+                  ) : (
+                    <Share2 size={16} strokeWidth={2.4} aria-hidden="true" />
+                  )}
+                </motion.span>
+              </AnimatePresence>
+            </span>
+
+            <span className="share-label">
+              {copied ? "Link copied" : "Share this remix"}
+            </span>
+          </motion.button>
+
+          {manual && (
+            <input
+              className="share-manual"
+              readOnly
+              autoFocus
+              value={shareUrl}
+              aria-label="Link to this remix"
+              onFocus={(e) => e.currentTarget.select()}
+            />
+          )}
         </motion.div>
       )}
 
