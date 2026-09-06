@@ -19,6 +19,8 @@ import Image from "next/image";
 import { motion, useReducedMotion, type Variants } from "framer-motion";
 
 import { PLAY_STORE_URL } from "@/lib/site";
+import { WaitlistModal } from "@/components/WaitlistModal";
+import { AppleIcon } from "@/components/icons";
 import type { LinkPreview } from "@/components/RecipeLinkCard";
 import { iconForIngredient } from "@/lib/ingredient-icon";
 
@@ -90,6 +92,7 @@ export function ConvertResult({
 }) {
   const still = useReducedMotion();
   const [copied, setCopied] = useState(false);
+  const [waitlist, setWaitlist] = useState(false);
   const shared = variant === "shared";
   const dietWord = result.diet === "None" ? "adapted" : result.diet.toLowerCase();
 
@@ -269,6 +272,17 @@ export function ConvertResult({
           ? "Your first remix is free. No card, no app needed to try it."
           : "That was your one free conversion. Plateful converts every recipe you save, and keeps them all in one place."}
       </motion.p>
+
+      {/* Every button above goes to Google Play, so without this an iPhone
+          reaches the end of the funnel and finds nothing it can install. */}
+      <motion.p className="recipe-ios" variants={rise}>
+        <button type="button" onClick={() => setWaitlist(true)} aria-haspopup="dialog">
+          <AppleIcon size={13} fill="currentColor" />
+          On iPhone? Plateful is Android only for now. Join the waitlist.
+        </button>
+      </motion.p>
+
+      <WaitlistModal open={waitlist} onClose={() => setWaitlist(false)} />
 
       {!shared && result.remixId && (
         <motion.div className="share" variants={rise}>

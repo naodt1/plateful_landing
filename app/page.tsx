@@ -12,6 +12,7 @@ import {
 
 import { Reveal, RevealStagger, RevealItem } from "@/components/Reveal";
 import { StoreButtons } from "@/components/StoreButtons";
+import { Platforms } from "@/components/Platforms";
 import { ImportFlow } from "@/components/ImportFlow";
 import { Faq } from "@/components/Faq";
 import { SiteNav } from "@/components/SiteNav";
@@ -305,7 +306,27 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ---------- 7. FAQ ---------- */}
+      {/* ---------- 7. Where you can get it ---------- */}
+      <section className="platforms" aria-labelledby="platforms-title">
+        <div className="container">
+          <Reveal className="section-head">
+            <p className="eyebrow">Where you can get it</p>
+            <h2 id="platforms-title" className="section-title">
+              On Android now. iPhone next.
+            </h2>
+            <p className="section-sub">
+              Plateful is out on Google Play today. The iOS version is being
+              built, and the waitlist is the first to know.
+            </p>
+          </Reveal>
+
+          <Reveal delay={0.1}>
+            <Platforms />
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ---------- 8. FAQ ---------- */}
       <section className="faq" aria-labelledby="faq-title">
         <div className="container">
           <Reveal className="section-head">
@@ -321,7 +342,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ---------- 8. Final CTA ---------- */}
+      {/* ---------- 9. Final CTA ---------- */}
       <section className="cta" aria-labelledby="cta-title">
         <div className="container">
           <Reveal className="cta-inner">
@@ -339,7 +360,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ---------- 9. Footer ---------- */}
+      {/* ---------- 10. Footer ---------- */}
       <SiteFooter />
     </>
   );

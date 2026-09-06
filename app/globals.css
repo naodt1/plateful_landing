@@ -2212,6 +2212,30 @@ img {
   text-wrap: pretty;
 }
 
+.recipe-ios {
+  margin: 10px 0 0;
+  text-align: center;
+}
+
+.recipe-ios button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  font-size: 13.5px;
+  color: var(--muted-light);
+  cursor: pointer;
+  text-wrap: pretty;
+}
+
+.recipe-ios button:hover {
+  color: var(--green);
+  text-decoration: underline;
+}
+
 /* ---------- Swaps ---------- */
 .swaps {
   margin-top: 40px;
@@ -2600,6 +2624,92 @@ body:has(.recipe-bar) {
   color: var(--muted);
 }
 
+/* ---------- Where you can get it ---------- */
+.platforms {
+  padding-top: var(--section-y);
+  padding-bottom: var(--section-y);
+}
+
+.plat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+  max-width: 880px;
+  margin: 0 auto;
+}
+
+.plat-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background: var(--cream-card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 28px 26px;
+  box-shadow: var(--shadow-card);
+}
+
+/* The one you can actually install today gets the weight. */
+.plat-card.is-live {
+  background: var(--green-mist-soft);
+  border-color: var(--border-green);
+}
+
+.plat-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 13px;
+  background: #fff;
+  border: 1px solid var(--border);
+  color: var(--ink);
+  margin-bottom: 18px;
+}
+
+.plat-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 8px;
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: var(--green);
+  color: #fff;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.plat-status.is-soon {
+  background: var(--border);
+  color: var(--muted);
+}
+
+.plat-card h3 {
+  font-family: var(--font-serif), Georgia, serif;
+  font-size: 25px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  margin: 0 0 10px;
+}
+
+.plat-body {
+  font-size: 15.2px;
+  line-height: 1.6;
+  color: var(--muted);
+  margin: 0 0 22px;
+  text-wrap: pretty;
+}
+
+/* Pushes both buttons to the same line whatever the copy above them does. */
+.plat-btn {
+  margin-top: auto;
+  width: 100%;
+}
+
 /* ---------- Shared remix page ---------- */
 .remix-page {
   padding-top: 44px;
@@ -2766,6 +2876,10 @@ body:has(.recipe-bar) {
     padding: 11px 18px;
     font-size: 14.5px;
   }
+  .plat-grid {
+    grid-template-columns: 1fr;
+  }
+
   .share {
     flex-direction: column;
     align-items: stretch;
