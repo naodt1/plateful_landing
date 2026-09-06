@@ -135,9 +135,6 @@ export function ConvertResult({
   // Built in the browser, because the origin is not known while rendering on
   // the server and a guess would end up in someone's message thread.
   const [shareUrl, setShareUrl] = useState("");
-  // Bumped on every successful copy so the ring replays rather than firing
-  // once and never again.
-  const [pulse, setPulse] = useState(0);
   // Only ever shown when both copy routes were refused, which is the one case
   // where the press would otherwise produce nothing at all.
   const [manual, setManual] = useState(false);
@@ -331,9 +328,8 @@ export function ConvertResult({
         <motion.div className="share" variants={rise}>
           <motion.button
             type="button"
-            className={copied ? "share-btn is-copied" : "share-btn"}
-            whileHover={still ? undefined : { y: -2 }}
-            whileTap={still ? undefined : { scale: 0.96 }}
+            className="btn btn-primary share-btn"
+            whileTap={still ? undefined : { scale: 0.99 }}
             transition={{ type: "spring", stiffness: 520, damping: 30 }}
             onClick={async () => {
               if (!shareUrl) return;
@@ -354,51 +350,18 @@ export function ConvertResult({
               }
               if (await copyText(shareUrl)) {
                 setCopied(true);
-                setPulse((n) => n + 1);
                 setTimeout(() => setCopied(false), 2400);
               } else {
                 setManual(true);
               }
             }}
           >
-            {/* A ring leaving the button is the acknowledgement: something
-                went out, which is exactly what just happened. */}
-            <AnimatePresence>
-              {pulse > 0 && (
-                <motion.span
-                  key={pulse}
-                  className="share-ring"
-                  aria-hidden="true"
-                  initial={{ opacity: 0.75, scale: 1 }}
-                  animate={{ opacity: 0, scale: 1.28 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.85, ease: "easeOut" }}
-                />
-              )}
-            </AnimatePresence>
-
-            <span className="share-well">
-              <AnimatePresence mode="wait" initial={false}>
-                <motion.span
-                  key={copied ? "done" : "share"}
-                  initial={still ? false : { scale: 0.4, opacity: 0, rotate: -25 }}
-                  animate={{ scale: 1, opacity: 1, rotate: 0 }}
-                  exit={still ? undefined : { scale: 0.4, opacity: 0 }}
-                  transition={{ type: "spring", stiffness: 620, damping: 26 }}
-                  style={{ display: "flex" }}
-                >
-                  {copied ? (
-                    <Check size={17} strokeWidth={3} aria-hidden="true" />
-                  ) : (
-                    <Share2 size={16} strokeWidth={2.4} aria-hidden="true" />
-                  )}
-                </motion.span>
-              </AnimatePresence>
-            </span>
-
-            <span className="share-label">
-              {copied ? "Link copied" : "Share this remix"}
-            </span>
+            {copied ? (
+              <Check size={18} strokeWidth={2.6} aria-hidden="true" />
+            ) : (
+              <Share2 size={18} strokeWidth={2.2} aria-hidden="true" />
+            )}
+            {copied ? "Link copied" : "Share this remix"}
           </motion.button>
 
           {manual && (

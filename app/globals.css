@@ -2788,15 +2788,20 @@ body:has(.recipe-bar) {
 .share {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
   gap: 10px;
-  margin-top: 20px;
+  margin-top: 12px;
+}
+
+/* Full width under the two actions: the site's own black button, just longer. */
+.share-btn {
+  width: 100%;
 }
 
 /* Appears only when the browser refused to copy, so the press still leaves
    the reader with something they can act on. */
 .share-manual {
-  width: min(100%, 30rem);
+  width: 100%;
   font-family: inherit;
   font-size: 14px;
   color: var(--muted);
@@ -2804,61 +2809,7 @@ body:has(.recipe-bar) {
   background: #fff;
   border: 1px solid var(--border-green);
   border-radius: 999px;
-  padding: 10px 16px;
-}
-
-/* Deliberately not another pill in the row above. The icon sits in its own
-   well, the face is lit from the top, and it stands off the page far enough
-   to look like something you press rather than something you read. */
-.share-btn {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  padding: 9px 28px 9px 9px;
-  border: none;
-  border-radius: 999px;
-  font-family: inherit;
-  font-size: 15.5px;
-  font-weight: 650;
-  letter-spacing: -0.005em;
-  color: #fff;
-  cursor: pointer;
-  background: linear-gradient(
-    180deg,
-    #2c9a6d 0%,
-    var(--green) 52%,
-    #1a6a48 100%
-  );
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28),
-    0 2px 4px rgba(16, 60, 40, 0.24), 0 16px 30px -16px rgba(16, 60, 40, 0.8);
-}
-
-.share-well {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.2);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
-}
-
-.share-label {
-  white-space: nowrap;
-}
-
-.share-ring {
-  position: absolute;
-  inset: -2px;
-  border-radius: 999px;
-  border: 2px solid var(--green);
-  pointer-events: none;
-}
-
-.share-btn.is-copied {
-  background: linear-gradient(180deg, #23684d 0%, var(--green-deep) 100%);
+  padding: 11px 16px;
 }
 
 /* The convert page and the adapted recipe are defined below the main
